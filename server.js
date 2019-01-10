@@ -3,6 +3,9 @@ const path = require("path");
 const PORT = process.env.PORT || 3001;
 const app = express();
 const axios = require("axios")
+const nbaColor = require('nba-color');
+const NBA = require("nba");
+
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
@@ -24,6 +27,15 @@ app.get('/api/teams', function(req, res) {
         teams = teams.filter(x=>x.isNBAFranchise);
         for(var i =0; i<teams.length; i++){
           teams[i].logo = "https://www.nba.com/assets/logos/teams/primary/web/" + teams[i].tricode + ".svg"
+
+          teamColors = nbaColor.getColors(teams[i].tricode);
+          colorKeys = Object.keys(teamColors);
+          colors = []
+          for(var j =0; j<colorKeys.length; j++){
+            colors.push(teamColors[colorKeys[j]].hex)
+          }
+          teams[i].colors = colors;
+
         }
         res.send(teams);
     	}).catch(function(err){
@@ -31,6 +43,32 @@ app.get('/api/teams', function(req, res) {
 
     	})
 
+
+})
+
+
+
+app.get('/api/teams/:team', function(req, res) {
+    var team = req.params.team
+  
+    NBA.stats.teamPlayerDashboard({ TeamID: team, SeasonType: "Regular Season" }).then(function(data) {
+      console.log(data.playersSeasonTotals)
+        res.json(data.playersSeasonTotals);
+
+    })
+
+})
+
+
+
+app.get('/api/player/:player', function(req, res) {
+    var player = req.params.player
+  
+    NBA.stats.playerProfile({ PlayerID: player, SeasonType: "Regular Season" }).then(function(data) {
+
+        res.json(data);
+
+    })
 
 })
 
