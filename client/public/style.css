@@ -1,3 +1,30 @@
 .player-card{
-	display: inline-block;
+	/*display: inline-block;*/
+}
+.team-btn{
+	/*max-width:100px;*/
+}
+.team-btn img{
+max-width:100%;
+}
+.player-card img{
+	max-width:100%;
+}
+.player-card.active{
+	flex-basis:200px;
+	flex-shrink:0;
+}
+.player-card{
+	transition: 0.5s;
+}
+.player-row{
+	display: flex;
+	max-width: 100%;
+}
+.main-container{
+	max-width:100%;
+width:100%;
+}
+.logo-sidebar{
+	display: flex;
 }

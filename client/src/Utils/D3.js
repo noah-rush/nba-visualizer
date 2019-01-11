@@ -43,8 +43,7 @@ export default {
 
 
       let texts = svg.selectAll('text').data(data);
-    texts.enter().append("text").merge(texts)
-
+      texts.enter().append("text").merge(texts)
         .attr("x", function(d) {
             return d.plusMinus > 0 ? x(0) - 10 : x(0) + 10
 
@@ -84,7 +83,10 @@ export default {
     axis.attr("transform", "translate(0," + (height + 30) + ")")
 
 
-  }
+  },
+    lineGraph:function(graphObj){
+
+}
 };
 
 
