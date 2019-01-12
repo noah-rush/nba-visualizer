@@ -34,14 +34,17 @@ class App extends Component {
     getTeam = (teamId, index) => {
       // console.log(teamId);
       // console.log(index);
-      let currentState = this.state;
+      let currentState = {...this.state};
       currentState.activeTeam = index;
       currentState.activePlayer = "false";
+      this.setState(currentState)
 
       // currentState.activeTeam.teamIndex = index
       API.getTeam(teamId)
         .then(data=>{
-          currentState.teams[index].players = data.data
+      let currentState = {...this.state};
+
+          currentState.teams[currentState.activeTeam].players = data.data
           this.setState(currentState)
           D3.initPlusMinus(this.state.teams[index]);
           // this.getPlayerImages(index);
@@ -49,10 +52,13 @@ class App extends Component {
         })
     };
     getPlayer = (playerId, teamIndex, playerIndex) => {
-      let currentState = this.state;
+      let currentState = {...this.state};
       currentState.activePlayer = playerIndex;
+      this.setState(currentState)
       API.getPlayer(playerId)
       .then(data =>{
+              let currentState = {...this.state};
+
         currentState.teams[teamIndex].players[playerIndex].profile = data.data;
         this.setState(currentState)
       })
@@ -96,6 +102,8 @@ class App extends Component {
               id = {team.teamId}
        			  logo = {team.logo}
               index = {index}
+              active = {index == this.state.activeTeam ? "active" : ""}
+
        			  tricode = {team.tricode}
               getTeam = {this.getTeam}>
        	</TeamItem>

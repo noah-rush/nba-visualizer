@@ -25,9 +25,10 @@ app.get('/api/teams', function(req, res) {
 
         teams = data.data.league.standard;
         teams = teams.filter(x=>x.isNBAFranchise);
+
         for(var i =0; i<teams.length; i++){
           teams[i].logo = "https://www.nba.com/assets/logos/teams/primary/web/" + teams[i].tricode + ".svg"
-
+          teams[i].players =[]
           teamColors = nbaColor.getColors(teams[i].tricode);
           colorKeys = Object.keys(teamColors);
           colors = []
