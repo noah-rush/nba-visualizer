@@ -62,7 +62,10 @@ export default {
         axis.attr("transform", "translate(0," + (height + 30) + ")")
 
 
-  }
+  },
+    lineGraph:function(graphObj){
+
+}
 };
 
 

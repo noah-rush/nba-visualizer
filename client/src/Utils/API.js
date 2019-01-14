@@ -9,7 +9,7 @@ export default {
   getTeam: function(id) {
     return axios.get("/api/teams/" + id);
   },
-  getPlayerData: function(id) {
+  getPlayer: function(id) {
     return axios.get("/api/player/" + id);
   },
   // Deletes the book with the given id
