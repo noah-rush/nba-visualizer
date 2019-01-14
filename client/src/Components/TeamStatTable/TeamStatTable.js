@@ -53,7 +53,7 @@ var TeamStatTable = (props) => {
                         statHeaderBar.push(<StatHeaderCell property = {property}
                                                             label = {props.translationArray[property]}
                                                             sort = {props.sort}
-                                                            switchSort = {props.tableSort == property}>
+                                                            >
                                                             </StatHeaderCell>
                                       );
                     }

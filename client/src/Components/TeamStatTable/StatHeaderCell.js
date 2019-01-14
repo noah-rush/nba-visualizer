@@ -6,7 +6,7 @@ var StatHeaderCell = (props) => {
 
 return (
 	<th>
-	<button onClick = {() =>{props.sort(props.property, props.switchSort)}}>{props.label}</button>
+	<button onClick = {() =>{props.sort(props.property)}}>{props.label}</button>
 	</th>
 	)
 

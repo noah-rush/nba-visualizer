@@ -6,7 +6,7 @@ import TeamItem from "./Components/TeamBar/TeamItem.js";
 import StatsArea from "./Components/StatsArea/StatsArea.js";
 import Graph from "./Components/Graphs/Graph.js";
 import PlayerCard from "./Components/Player/PlayerCard.js";
-import PlayerStats from "./Components/Player/PlayerStats.js";
+// import PlayerStats from "./Components/Player/PlayerStats.js";
 import TeamStatTable from "./Components/TeamStatTable/TeamStatTable.js";
 
 import API from "./Utils/API";
