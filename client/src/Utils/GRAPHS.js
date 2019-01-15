@@ -8,6 +8,13 @@ export default {
         graphObject.target = ".ast-to-tov"
         graphObject.headShots = true
         d3.lineGraph(graphObject)
+    },
+    statGraph(stat,team){
+    	let graphObject = {}
+    	graphObject.dataSet = team.players.map(x => {return {id:x.playerId, xValue:x.playerName, yValue: x[stat]}});
+    	graphObject.target = ".stat-graph"
+    	graphObject.colorScale = team.colors;
+    	d3.barGraph(graphObject)
     }
 };
 

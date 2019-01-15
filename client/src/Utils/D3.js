@@ -1,10 +1,110 @@
 import { select, selectAll, enter, event } from 'd3-selection'
-import { scaleLinear } from 'd3-scale'
+import { scaleLinear, scaleBand } from 'd3-scale'
 import { axisTop, axisBottom, axisLeft } from 'd3-axis'
 import { extent, max } from 'd3-array'
 import { transition } from 'd3-transition'
 
 export default {
+    barGraph: function(graphObj) {
+
+
+
+        let data = graphObj.dataSet;
+        var min = Math.min(...data.map(d => d.yValue));
+        var max = Math.max(...data.map(d => d.yValue));
+        // console.log(data);
+        let totalHeight = 800;
+        let margin = { top: 60, right: 60, bottom: 60, left: 60 };
+        let height = totalHeight - margin.top - margin.bottom;
+        let width = data.length * 50;
+            const xScale = scaleBand()
+            .range([0, width])
+            .domain(data.map((s) => s.xValue))
+            .padding(20)
+        let svg = select(graphObj.target)
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", totalHeight)
+
+        svg = select(graphObj.target + " .graph-inner")
+            // .attr("transform", "translate(" + margin.left + "," +margin.top  +")")
+        svg.selectAll(".x-axis").remove()
+        svg.selectAll(".y-axis").remove()
+        svg.attr("width", width)
+            .attr("height", height)
+            .attr("transform", "translate(" + margin.left + ", " + margin.top +")");
+        let xAxisCall = axisLeft();
+        let yScale = scaleLinear();
+        let colorScale = scaleLinear().domain(extent(data, function(d) { return d.yValue; })).range([graphObj.colorScale[1], graphObj.colorScale[0]]);
+        // svg.attr("height", totalHeight)
+        // let graphInner = svg.append("g").attr("class", "graph-inner");
+                // let findMax = [...data];
+        // let dataMax = Math.max(findMax.map(x=>x.yValue));
+        let y = scaleLinear()
+            .domain([0, max])
+            .range([0, height]);
+            console.log(data);
+        let bars = svg.selectAll('rect').data(data);
+        bars.enter().append("rect").merge(bars).transition()
+            .attr("height", function(d) { return y(d.yValue) })
+            .attr("y", function(d){return height - y(d.yValue)})
+            .attr("fill", function(d) { return colorScale(d.yValue) })
+        bars.exit().remove();
+
+        // let texts = svg.selectAll('text').data(data);
+        // texts.enter().append("text").merge(texts)
+        //     .attr("x", function(d) {
+        //         return d.plusMinus > 0 ? x(0) - 10 : x(0) + 10
+
+        //     })
+        //     .style("text-anchor", function(d) { return d.plusMinus > 0 ? "end" : "start" })
+        //     .attr("y", 15)
+        //     .attr("dy", "1.25em")
+        //     .transition()
+        //     .text(function(d) { return d.playerName + ": " + d.plusMinus; });
+        // texts.exit().remove();
+
+        svg.selectAll('rect').style("width","40px");
+        svg.selectAll('rect').attr("x", function(d, i) { return xScale(d.xValue) - 20 });
+        svg.selectAll('text').attr("y", function(d, i) { return (30 * i) + "px" });
+
+
+
+
+    
+
+        svg.append('g')
+            .attr('transform', `translate(0, ${height})`)
+            .attr("class", "x-axis")
+            .call(axisBottom(xScale))
+            .selectAll('.x-axis .tick text') // select all the x tick texts
+            .call(function(t){                
+            t.each(function(d){ // for each one
+              var self = select(this);
+              var s = self.text().split(' ');  // get the text and split it
+              self.text(''); // clear it out
+              self.append("tspan") // insert two tspans
+                .attr("x", 0)
+                .attr("dy",".8em")
+                .text(s[0]);
+              self.append("tspan")
+                .attr("x", 0)
+                .attr("dy",".8em")
+                .text(s[1]);
+            })
+        })
+
+        
+        let axis = svg.append("g")
+            .attr("class", "y-axis")
+            .attr("transform", "translate(0,0)")
+        yScale.domain([0, max]).range([height, 0]);
+        xAxisCall.scale(yScale)
+        axis.call(xAxisCall);
+
+
+
+
+    },
     initPlusMinus: function(team) {
 
 
@@ -75,7 +175,7 @@ export default {
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-        
+
         plotArea.select(".scatter-x").remove()
         plotArea.select(".scatter-y").remove()
 
@@ -90,7 +190,7 @@ export default {
         let xScale = scaleLinear()
         let colors
 
-        var x = scaleLinear().range([margin.left, width ]);
+        var x = scaleLinear().range([margin.left, width]);
         var y = scaleLinear().range([height, 0 + margin.top]);
 
 
@@ -146,23 +246,10 @@ export default {
 
         // // Add the Y Axis
         plotArea.append("g")
-            .attr("transform", "translate(" + margin.left +",0)")
+            .attr("transform", "translate(" + margin.left + ",0)")
 
             .attr("class", "scatter-y")
             .call(axisLeft(y));
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 };

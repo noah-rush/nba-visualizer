@@ -90,6 +90,7 @@ class App extends Component {
       }
       currentState.tableSort = property;
       this.setState(currentState)
+      GRAPHS.statGraph(property, this.state.teams[this.state.activeTeam]);
 
     }
     getTeam = (teamId, index) => {
@@ -197,6 +198,8 @@ class App extends Component {
         <div class = "team-view-container">
        
         <Graph className = "graph"></Graph>
+        <Graph className = "stat-graph"></Graph>
+
         <Graph className = "ast-to-tov"></Graph>
         </div>
         : ""
