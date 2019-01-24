@@ -35,6 +35,21 @@ width:100%;
 }
 .logo-sidebar{
 	display: flex;
+	opacity: 0;
+	transition: all 0.5s;
+
+}
+.logo-sidebar.active{
+	opacity: 1;
+}
+.player-row{
+	display: flex;
+	opacity: 0;
+	transition: all 0.5s;
+
+}
+.player-row.active{
+	opacity: 1;
 }
 div.tooltip {
   position: absolute;

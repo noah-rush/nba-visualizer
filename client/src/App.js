@@ -6,6 +6,8 @@ import TeamItem from "./Components/TeamBar/TeamItem.js";
 import StatsArea from "./Components/StatsArea/StatsArea.js";
 import Graph from "./Components/Graphs/Graph.js";
 import PlayerCard from "./Components/Player/PlayerCard.js";
+import PlayerBar from "./Components/Player/PlayerBar.js";
+
 // import PlayerStats from "./Components/Player/PlayerStats.js";
 import TeamStatTable from "./Components/TeamStatTable/TeamStatTable.js";
 
@@ -67,7 +69,9 @@ class App extends Component {
         activeTeam: "false",
         activePlayer: "false",
         viewMode: "team",
-        switchSort: false
+        switchSort: false,
+        teamsLoaded:"not-active",
+        playerLoaded:"not-acitve"
 
     };
     componentDidMount() {
@@ -77,7 +81,8 @@ class App extends Component {
     loadTeams = () => {
         API.getTeams()
             .then(res => this.setState({
-                teams: res.data
+                teams: res.data,
+                teamsLoaded:"active"
             }))
             .catch(err => console.log(err));
     };
@@ -96,10 +101,13 @@ class App extends Component {
     getTeam = (teamId, index) => {
         // console.log(teamId);
         // console.log(index);
+
         let currentState = { ...this.state };
         currentState.activeTeam = index;
         currentState.activePlayer = "false";
         currentState.viewMode = "team"
+        currentState.playerLoaded = "not-active";
+
 
         this.setState(currentState)
 
@@ -107,7 +115,7 @@ class App extends Component {
         API.getTeam(teamId)
             .then(data => {
                 let currentState = { ...this.state };
-
+                currentState.playerLoaded = "active";
                 currentState.teams[currentState.activeTeam].players = data.data
                 this.setState(currentState)
                 D3.initPlusMinus(this.state.teams[index]);
@@ -153,7 +161,7 @@ class App extends Component {
     render() {
         return (
             <div className = "main-container">
-      <TeamBar>
+      <TeamBar active = {this.state.teamsLoaded}>
       {this.state.teams.map((team, index) => (
         <TeamItem key = {team.teamId}
               id = {team.teamId}
@@ -166,7 +174,7 @@ class App extends Component {
         </TeamItem>
         ))}
       </TeamBar>
-      <div className = "player-row">
+      <PlayerBar active = {this.state.playerLoaded}>
     {
       isNaN(this.state.activeTeam) ? "" :
       this.state.teams[this.state.activeTeam].players.map((player,index)=>(
@@ -180,7 +188,7 @@ class App extends Component {
           ></PlayerCard>
       ))
       }
-    </div>
+    </PlayerBar>
       <StatsArea>
    
         { this.state.activeTeam != "false" ? 
@@ -197,7 +205,6 @@ class App extends Component {
 
         <div class = "team-view-container">
        
-        <Graph className = "graph"></Graph>
         <Graph className = "stat-graph"></Graph>
 
         <Graph className = "ast-to-tov"></Graph>

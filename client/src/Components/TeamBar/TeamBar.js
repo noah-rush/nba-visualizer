@@ -3,7 +3,7 @@ import TeamItem from "./TeamItem.js"
 
 var TeamBar = (props) =>{
     return (
-      <div className = "logo-sidebar">
+      <div className = {`logo-sidebar ${props.active}`}>
       {props.children}
       </div>
     )

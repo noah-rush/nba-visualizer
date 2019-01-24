@@ -113,7 +113,7 @@ export default {
         let margin = { top: 20, right: 30, bottom: 30, left: 40 };
         let width = totalWidth - margin.left - margin.right;
         let height = 700;
-        let svg = select("svg")
+        let svg = select(".plus-minus svg")
             .attr("width", width + margin.left + margin.right)
         svg.selectAll(".x-axis").remove()
         let xAxisCall = axisTop();
