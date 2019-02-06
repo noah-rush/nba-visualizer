@@ -9,12 +9,23 @@ export default {
         graphObject.headShots = true
         d3.lineGraph(graphObject)
     },
-    statGraph(stat,team){
+    statGraph(stat,team, style ){
     	let graphObject = {}
     	graphObject.dataSet = team.players.map(x => {return {id:x.playerId, xValue:x.playerName, yValue: x[stat]}});
     	graphObject.target = ".stat-graph"
     	graphObject.colorScale = team.colors;
-    	d3.barGraph(graphObject)
+        switch(style){
+            case "Pie":
+                d3.pieChart(graphObject);
+                break;
+            case "Bar":
+                d3.barGraph(graphObject);
+                break;
+
+        }
+    	// d3.barGraph(graphObject)
+     //    d3.pieChart(graphObject)
+
     }
 };
 

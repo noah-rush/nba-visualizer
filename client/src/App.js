@@ -22,8 +22,8 @@ import GRAPHS from "./Utils/GRAPHS";
 let statTranslationArray = {
 
     groupSet: "Group Set",
-    playerId: "Player Id",
-    playerName: "Player Name",
+    playerId: "",
+    playerName: "Name",
     gp: "Games Played",
     w: "Wins",
     l: "Losses",
@@ -71,7 +71,8 @@ class App extends Component {
         viewMode: "team",
         switchSort: false,
         teamsLoaded:"not-active",
-        playerLoaded:"not-acitve"
+        playerLoaded:"not-active",
+        graphStyle: "Pie"
 
     };
     componentDidMount() {
@@ -95,7 +96,7 @@ class App extends Component {
       }
       currentState.tableSort = property;
       this.setState(currentState)
-      GRAPHS.statGraph(property, this.state.teams[this.state.activeTeam]);
+      GRAPHS.statGraph(property, this.state.teams[this.state.activeTeam], this.state.graphStyle);
 
     }
     getTeam = (teamId, index) => {
@@ -106,13 +107,12 @@ class App extends Component {
         currentState.activeTeam = index;
         currentState.activePlayer = "false";
         currentState.viewMode = "team"
+        // currentState.playerLoaded = "not-active";
+        this.setState(currentState)
+        if(currentState.teams[currentState.activeTeam].players.length == 0 ){
         currentState.playerLoaded = "not-active";
 
-
-        this.setState(currentState)
-
-        // currentState.activeTeam.teamIndex = index
-        API.getTeam(teamId)
+          API.getTeam(teamId)
             .then(data => {
                 let currentState = { ...this.state };
                 currentState.playerLoaded = "active";
@@ -124,6 +124,11 @@ class App extends Component {
                 // this.getPlayerImages(index);
                 // currentState.data.data
             })
+        }
+        
+
+        // currentState.activeTeam.teamIndex = index
+       
     };
     getPlayer = (playerId, teamIndex, playerIndex) => {
         let currentState = { ...this.state };
@@ -140,6 +145,12 @@ class App extends Component {
 
 
 
+
+    }
+    toggleGraphType = event =>
+    {
+      this.setState({"graphStyle": event.target.value})
+      GRAPHS.statGraph(this.state.tableSort, this.state.teams[this.state.activeTeam], event.target.value);
 
     }
     createStatTable = (stats) => {
@@ -174,25 +185,14 @@ class App extends Component {
         </TeamItem>
         ))}
       </TeamBar>
-      <PlayerBar active = {this.state.playerLoaded}>
-    {
-      isNaN(this.state.activeTeam) ? "" :
-      this.state.teams[this.state.activeTeam].players.map((player,index)=>(
-          <PlayerCard key = {player.playerId}
-                      id = {player.playerId}
-                      index = {index}
-                      active = {index == this.state.activePlayer ? "active" : ""}
-                      teamIndex = {this.state.activeTeam}
-                      name = {player.playerName}
-                      getPlayer = {this.getPlayer}
-          ></PlayerCard>
-      ))
-      }
-    </PlayerBar>
+   
+    <div className = "row">
       <StatsArea>
    
-        { this.state.activeTeam != "false" ? 
+        { 
+          this.state.activeTeam != "false" ? 
            <TeamStatTable 
+           colors = {this.state.teams[this.state.activeTeam].colors}
            tableSort = {this.state.tableSort ? this.state.tableSort : "" }
            sort = {this.sort}
         mode = {this.state.viewMode}
@@ -201,21 +201,22 @@ class App extends Component {
         switchSort = {this.state.switchSort}
         team = { this.state.teams[this.state.activeTeam].players }></TeamStatTable>:"" }
 
-        {this.state.viewMode == "team" && this.state.activeTeam != "false" ? 
-
-        <div class = "team-view-container">
        
-        <Graph className = "stat-graph"></Graph>
-
-        <Graph className = "ast-to-tov"></Graph>
-        </div>
-        : ""
-      }
+      
       </StatsArea>
+        {this.state.tableSort ?
+        <div class = "graph-view-container">
+       
+        <Graph toggleGraphType = {this.toggleGraphType} graphName = {this.state.tableSort ? statTranslationArray[this.state.tableSort] : ""}className = "stat-graph"></Graph>
+
+
+        </div>
+        : ""}
       </div>
+      </div>
+)
 
-
-        );
+        
     }
 }
 

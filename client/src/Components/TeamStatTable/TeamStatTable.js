@@ -15,8 +15,8 @@ var TeamStatTable = (props) => {
     // console.log(props.team)
     let teamStats = [...props.team]
 
-    console.log(props.playerId)
-    console.log()
+    // console.log(props.playerId)
+    // console.log()
 
     if(props.tableSort){
       if(props.switchSort){
@@ -47,8 +47,9 @@ var TeamStatTable = (props) => {
         } else {
             for (var property in player) {
                 if (player == props.team[0]) {
-                    if (player.hasOwnProperty(property) && property != "profile" && property.indexOf("Rank") < 0) {
+                    if (player.hasOwnProperty(property) && property != "profile" && property.indexOf("Rank") < 0 && property != "groupSet" ) {
 
+                        // if(p)
 
                         statHeaderBar.push(<StatHeaderCell property = {property}
                                                             label = {props.translationArray[property]}
@@ -58,9 +59,22 @@ var TeamStatTable = (props) => {
                                       );
                     }
                 }
-                if (player.hasOwnProperty(property) && property != "profile" && property.indexOf("Rank") < 0) {
+                if (player.hasOwnProperty(property) && property != "profile" && property.indexOf("Rank") < 0 && property != "groupSet") {
+                    if(property == "playerId"){
+                    let img = "https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/" + player[property] + ".png";
+                    statRow.push(<td className = "headcol"><img src = {img}/></td>);
 
-                    statRow.push(<td>{player[property]}</td>);
+                  }else if(property == "playerName"){
+                    statRow.push(<td className = "name">{player[property]}</td>);
+
+                  }else{
+                    if(props.tableSort == property){
+                     statRow.push(<td className = "active-prop">{player[property]}</td>);
+                  }else{
+                     statRow.push(<td >{player[property]}</td>);
+
+                  }
+                  }
                 }
 
 
@@ -91,9 +105,12 @@ var TeamStatTable = (props) => {
 
     return (
         <div className = "team-stat-table">
-      <table>
+      <table className = "table table-striped ">
+      <thead style = {{ backgroundColor: props.colors[0] }} className = "thead-dark">
+            <tr style = {{ color: props.colors[1] }} >{statHeaderBar}</tr>
+
+      </thead>
       <tbody>
-      <tr>{statHeaderBar}</tr>
       {statRows}
       </tbody>
 

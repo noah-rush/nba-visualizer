@@ -1,10 +1,86 @@
 import { select, selectAll, enter, event } from 'd3-selection'
 import { scaleLinear, scaleBand } from 'd3-scale'
 import { axisTop, axisBottom, axisLeft } from 'd3-axis'
-import { extent, max } from 'd3-array'
+import { extent, max, sum } from 'd3-array'
 import { transition } from 'd3-transition'
 
 export default {
+    pieChart:function(graphObj){
+        let data = graphObj.dataSet;
+        let width = 1000;
+        let height =1000;
+        let svg = select(graphObj.target)
+            .attr("width", width )
+            .attr("height", height)
+        svg = select(graphObj.target + " .graph-inner").attr("width", width)
+            .attr("height", height).attr("transform", "translate(0,0)")
+        svg.selectAll(".x-axis").remove()
+        svg.selectAll(".y-axis").remove()
+        svg.selectAll("rect").remove()
+
+        let total = sum(data, function(d) { return d.yValue; });
+        data.sort((a,b) => a['yValue'] - b['yValue'])
+
+        data.map((val, index) => {
+            data[index].yValue = data[index].yValue*360 / total
+            // data[index].startAngle = index == 0 ? 0 : sum(data.slice(0, index), function(d){return d.yValue})
+            // data[index].startAngle = data[index].startAngle*360 / total
+
+            })
+         data.map((val, index) => {
+            // data[index].yValue = data[index].yValue*360 / total
+            data[index].startAngle = index == 0 ? 0 : sum(data.slice(0, index), function(d){return d.yValue})
+            // data[index].startAngle = data[index].startAngle*360 / total
+
+            })
+                 let colorScale = scaleLinear().domain(extent(data, function(d) { return d.yValue; })).range([graphObj.colorScale[1], graphObj.colorScale[0]]);
+
+        // console.log(sum(data, function(d) { return d.yValue; }));
+
+        console.log(data)
+            let div = select("body").append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0);
+        let arcs = svg.selectAll('path').data(data);
+       
+        arcs.enter().append("path").merge(arcs) .on("mouseover", function(d) {
+                // console.log("Dsds")
+                select(this).transition().style("opacity", "1")
+
+                div.transition()
+                    .duration(200)
+                    .style("opacity", .9);
+                div.html(bigHead(d.id) + '<div class = "name">' + d.xValue  + '</div>')
+                    .style("left", (event.pageX) + "px")
+                    .style("top", (event.pageY - 28) + "px")
+                    .style("padding", "20px")
+                    // .style("background",graphObj.colorScale[0] );
+
+            })
+            .on("mouseout", function(d) {
+                select(this).transition().style("opacity", "0.9")
+
+                div.transition()
+                    .duration(500)
+                    .style("opacity", 0);
+            }).transition()
+            .style("opacity", "0.9")
+            // .style("transition", "0.9")
+
+            .attr("d", function(d, i){
+                // console.log(i);
+                // console.log(arcs.data());
+                // if(i == 0){
+                    return getSectorPath(width/2, height/2, width, d.startAngle, d.yValue+ d.startAngle )
+                // }else{
+                //     return getSectorPath(100, 100, 100, arcs.data[i-1].yValue, d.yValue*360 / total )
+
+                // }
+            })
+            .attr("fill", function(d) { return colorScale(d.yValue) })
+            arcs.exit().remove();
+
+    },
     barGraph: function(graphObj) {
 
 
@@ -29,6 +105,7 @@ export default {
             // .attr("transform", "translate(" + margin.left + "," +margin.top  +")")
         svg.selectAll(".x-axis").remove()
         svg.selectAll(".y-axis").remove()
+        svg.selectAll("path").remove()
         svg.attr("width", width)
             .attr("height", height)
             .attr("transform", "translate(" + margin.left + ", " + margin.top +")");
@@ -42,7 +119,7 @@ export default {
         let y = scaleLinear()
             .domain([0, max])
             .range([0, height]);
-            console.log(data);
+            // console.log(data);
         let bars = svg.selectAll('rect').data(data);
         bars.enter().append("rect").merge(bars).transition()
             .attr("height", function(d) { return y(d.yValue) })
@@ -255,9 +332,28 @@ export default {
 };
 
 
+function getSectorPath(x, y, outerDiameter, a1, a2) {
+    const degtorad = Math.PI / 180;
+    const halfOuterDiameter = outerDiameter / 2;
+    const cr = halfOuterDiameter - 5;
+    const cx1 = (Math.cos(degtorad * a2) * cr) + x;
+    const cy1 = (-Math.sin(degtorad * a2) * cr) + y;
+    const cx2 = (Math.cos(degtorad * a1) * cr) + x;
+    const cy2 = (-Math.sin(degtorad * a1) * cr) + y;
+    let largeFlag = 0
+    console.log(a2 - a1);
+    if(a2-a1>180){
+        largeFlag = 1;
+    }
 
+    return "M" + x + " " + y + " " + cx1 + " " + cy1 + " A " + cr + " " + cr + " 0 " + largeFlag + " 1 " + cx2 + " " + cy2 + "Z";
+}
 
-
+function bigHead(id){
+     let img = "https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/" + id + ".png";
+      img = "<img src = '" + img + "'>";
+     return img;
+}
 // import axios from "axios";
 
 // export default {
