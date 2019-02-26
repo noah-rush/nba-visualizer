@@ -105,6 +105,15 @@ app.get('/api/teams/:team', function(req, res) {
 
 })
 
+app.get('/api/playerMap', function(req, res) {
+    
+    db.Players.find({})
+    .populate('hasPlayedWith')
+    .then(function(data){
+        res.json(data);
+    })
+
+})
 
 
 app.get('/api/player/:player', function(req, res) {

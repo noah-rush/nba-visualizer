@@ -1,32 +1,30 @@
 import d3 from './D3.js'
 
 export default {
-    teamAssistToTurnover(team){
+    teamAssistToTurnover(team) {
         let graphObject = {}
-        graphObject.dataSet = team.players.map(x => {return {id:x.playerId, name:x.playerName, xValue: x.ast, yValue: x.tov}});
+        graphObject.dataSet = team.players.map(x => { return { id: x.playerId, name: x.playerName, xValue: x.ast, yValue: x.tov } });
         console.log(graphObject)
         graphObject.target = ".ast-to-tov"
         graphObject.headShots = true
         d3.lineGraph(graphObject)
     },
-    statGraph(stat,team, style ){
-    	let graphObject = {}
-    	graphObject.dataSet = team.players.map(x => {return {id:x.playerId, xValue:x.playerName, yValue: x[stat]}});
-    	graphObject.target = ".stat-graph"
-    	graphObject.colorScale = team.colors;
-        switch(style){
+    statGraph(stat, team, style) {
+        let graphObject = {}
+        graphObject.dataSet = team.players.map(x => { return { id: x.playerId, xValue: x.playerName, yValue: x[stat] } });
+        graphObject.target = ".stat-graph"
+        graphObject.colorScale = team.colors;
+        switch (style) {
             case "Pie":
                 d3.pieChart(graphObject);
                 break;
             case "Bar":
                 d3.barGraph(graphObject);
                 break;
-
         }
-    	// d3.barGraph(graphObject)
-     //    d3.pieChart(graphObject)
 
-    }
+    },
+    
 };
 
 

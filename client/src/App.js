@@ -7,6 +7,7 @@ import StatsArea from "./Components/StatsArea/StatsArea.js";
 import Graph from "./Components/Graphs/Graph.js";
 import PlayerCard from "./Components/Player/PlayerCard.js";
 import PlayerBar from "./Components/Player/PlayerBar.js";
+import PlayerMap from "./Components/PlayerMap";
 
 // import PlayerStats from "./Components/Player/PlayerStats.js";
 import TeamStatTable from "./Components/TeamStatTable/TeamStatTable.js";
@@ -70,33 +71,46 @@ class App extends Component {
         activePlayer: "false",
         viewMode: "team",
         switchSort: false,
-        teamsLoaded:"not-active",
-        playerLoaded:"not-active",
+        teamsLoaded: "not-active",
+        playerLoaded: "not-active",
         graphStyle: "Pie"
 
     };
     componentDidMount() {
         this.loadTeams();
+        this.initPlayerMap();
+
+    };
+    initPlayerMap = () =>{
+        API.playerMap()
+            .then(data => {
+                // console.log(data.data);
+                // data = data.data.map(x => {x.r = 50});
+                // console.log(data);
+                data.data.forEach(function(element) { element.r = element.hasPlayedWith.length * 5; });
+                D3.playerMap(data.data);
+            })
+
 
     };
     loadTeams = () => {
         API.getTeams()
             .then(res => this.setState({
                 teams: res.data,
-                teamsLoaded:"active"
+                teamsLoaded: "active"
             }))
             .catch(err => console.log(err));
     };
-    sort = (property) =>{
-      let currentState = { ...this.state };
-      if(this.state.tableSort == property){
-        currentState.switchSort = !currentState.switchSort;
-      }else{
-        currentState.switchSort = false;
-      }
-      currentState.tableSort = property;
-      this.setState(currentState)
-      GRAPHS.statGraph(property, this.state.teams[this.state.activeTeam], this.state.graphStyle);
+    sort = (property) => {
+        let currentState = { ...this.state };
+        if (this.state.tableSort == property) {
+            currentState.switchSort = !currentState.switchSort;
+        } else {
+            currentState.switchSort = false;
+        }
+        currentState.tableSort = property;
+        this.setState(currentState)
+        GRAPHS.statGraph(property, this.state.teams[this.state.activeTeam], this.state.graphStyle);
 
     }
     getTeam = (teamId, index) => {
@@ -109,26 +123,26 @@ class App extends Component {
         currentState.viewMode = "team"
         // currentState.playerLoaded = "not-active";
         this.setState(currentState)
-        if(currentState.teams[currentState.activeTeam].players.length == 0 ){
-        currentState.playerLoaded = "not-active";
+        if (currentState.teams[currentState.activeTeam].players.length == 0) {
+            currentState.playerLoaded = "not-active";
 
-          API.getTeam(teamId)
-            .then(data => {
-                let currentState = { ...this.state };
-                currentState.playerLoaded = "active";
-                currentState.teams[currentState.activeTeam].players = data.data
-                this.setState(currentState)
-                D3.initPlusMinus(this.state.teams[index]);
-                GRAPHS.teamAssistToTurnover(this.state.teams[index])
+            API.getTeam(teamId)
+                .then(data => {
+                    let currentState = { ...this.state };
+                    currentState.playerLoaded = "active";
+                    currentState.teams[currentState.activeTeam].players = data.data
+                    this.setState(currentState)
+                    D3.initPlusMinus(this.state.teams[index]);
+                    GRAPHS.teamAssistToTurnover(this.state.teams[index])
 
-                // this.getPlayerImages(index);
-                // currentState.data.data
-            })
+                    // this.getPlayerImages(index);
+                    // currentState.data.data
+                })
         }
-        
+
 
         // currentState.activeTeam.teamIndex = index
-       
+
     };
     getPlayer = (playerId, teamIndex, playerIndex) => {
         let currentState = { ...this.state };
@@ -147,10 +161,9 @@ class App extends Component {
 
 
     }
-    toggleGraphType = event =>
-    {
-      this.setState({"graphStyle": event.target.value})
-      GRAPHS.statGraph(this.state.tableSort, this.state.teams[this.state.activeTeam], event.target.value);
+    toggleGraphType = event => {
+        this.setState({ "graphStyle": event.target.value })
+        GRAPHS.statGraph(this.state.tableSort, this.state.teams[this.state.activeTeam], event.target.value);
 
     }
     createStatTable = (stats) => {
@@ -172,6 +185,10 @@ class App extends Component {
     render() {
         return (
             <div className = "main-container">
+
+            <PlayerMap className = "player-connections">
+
+            </PlayerMap>
       <TeamBar active = {this.state.teamsLoaded}>
       {this.state.teams.map((team, index) => (
         <TeamItem key = {team.teamId}
@@ -207,16 +224,16 @@ class App extends Component {
         {this.state.tableSort ?
         <div class = "graph-view-container">
        
-        <Graph toggleGraphType = {this.toggleGraphType} graphName = {this.state.tableSort ? statTranslationArray[this.state.tableSort] : ""}className = "stat-graph"></Graph>
+        <Graph toggleGraphType = {this.toggleGraphType} graphName = {this.state.tableSort ? statTranslationArray[this.state.tableSort] : ""} className = "stat-graph"></Graph>
 
 
         </div>
         : ""}
       </div>
       </div>
-)
+        )
 
-        
+
     }
 }
 

@@ -263,3 +263,7 @@ button {
 	width:50%;
 	font-size:20px;
 }
+
+.player-map svg image{
+background:rgba(0,0,0,0.5);
+}
