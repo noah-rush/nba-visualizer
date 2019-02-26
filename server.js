@@ -5,44 +5,89 @@ const app = express();
 const axios = require("axios")
 const nbaColor = require('nba-color');
 const NBA = require("nba");
+const mongoose = require('mongoose');
+const moment = require('moment');
+
+
+var db = require("./models");
 
 // Define middleware here
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 // Serve up static assets (usually on heroku)
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
+    app.use(express.static("client/build"));
 }
 
 // Define API routes here
+// 
+// const mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/nba_db');
+
+
+
+
+
+// 202710
+// let startDate = "2/01/2019";
+
+// let currentDate = moment(startDate, "MM/DD/YYYY");
+// while(!currentDate.isSame(new Date(), "day")){
+//   // console.log(currentDate.format("MM/DD/YYYY") + " - " + currentDate.add(1,'days').format("MM/DD/YYYY"));
+// // console.log( currentDate.add(1,'days').format("MM/DD/YYYY"));
+// NBA.stats.teamPlayerDashboard({ LeagueID: "00", TeamID:"1610612755",  DateFrom:currentDate.format("MM/DD/YYYY"), DateTo: currentDate.add(1,'days').format("MM/DD/YYYY"), SeasonType: "Regular Season"}).then(function(data) {
+//       console.log(data)
+//         // res.json(data.playersSeasonTotals);
+
+//     })
+// // currentDate = currentDate.add(1,'days');
+// }
+
+
+NBA.stats.teamPlayerDashboard({ LeagueID: "00", TeamID: "1610612755", DateFrom: "11/22/2018", DateTo: "11/23/2018", SeasonType: "Regular Season" }).then(function(data) {
+    console.log(data)
+    // res.json(data.playersSeasonTotals);
+
+}).catch(function(eerr) {
+    console.log("eerr");
+})
+
+
+// NBA.stats.playerProfile({SeasonType: "Regular Season", PlayerID:"202710", Season: "2015-16" }).then(function(data) {
+//       console.log(data)
+//         // res.json(data.playersSeasonTotals);
+
+//     })
+
 
 app.get('/api/teams', function(req, res) {
 
-    console.log("dsds")
+    // console.log("dsds")
     axios.get('http://data.nba.net/10s/prod/v2/2018/teams.json').then(
-    	function(data){
-    		console.log(data.data);
+        function(data) {
+            // console.log(data.data);
 
-        teams = data.data.league.standard;
-        teams = teams.filter(x=>x.isNBAFranchise);
+            teams = data.data.league.standard;
+            teams = teams.filter(x => x.isNBAFranchise);
 
-        for(var i =0; i<teams.length; i++){
-          teams[i].logo = "https://www.nba.com/assets/logos/teams/primary/web/" + teams[i].tricode + ".svg"
-          teams[i].players =[]
-          teamColors = nbaColor.getColors(teams[i].tricode);
-          colorKeys = Object.keys(teamColors);
-          colors = []
-          for(var j =0; j<colorKeys.length; j++){
-            colors.push(teamColors[colorKeys[j]].hex)
-          }
-          teams[i].colors = colors;
+            for (var i = 0; i < teams.length; i++) {
+                teams[i].logo = "https://www.nba.com/assets/logos/teams/primary/web/" + teams[i].tricode + ".svg"
+                teams[i].players = []
+                teamColors = nbaColor.getColors(teams[i].tricode);
+                colorKeys = Object.keys(teamColors);
+                colors = []
+                for (var j = 0; j < colorKeys.length; j++) {
+                    colors.push(teamColors[colorKeys[j]].hex)
+                }
+                teams[i].colors = colors;
 
-        }
-        res.send(teams);
-    	}).catch(function(err){
-    		console.log(err);
+            }
+            res.send(teams);
+        }).catch(function(err) {
+        console.log(err);
 
-    	})
+    })
 
 
 })
@@ -51,9 +96,9 @@ app.get('/api/teams', function(req, res) {
 
 app.get('/api/teams/:team', function(req, res) {
     var team = req.params.team
-  
+
     NBA.stats.teamPlayerDashboard({ TeamID: team, SeasonType: "Regular Season" }).then(function(data) {
-      console.log(data.playersSeasonTotals)
+        // console.log(data.playersSeasonTotals)
         res.json(data.playersSeasonTotals);
 
     })
@@ -64,7 +109,7 @@ app.get('/api/teams/:team', function(req, res) {
 
 app.get('/api/player/:player', function(req, res) {
     var player = req.params.player
-  
+
     NBA.stats.playerProfile({ PlayerID: player, SeasonType: "Regular Season" }).then(function(data) {
 
         res.json(data);
@@ -77,11 +122,9 @@ app.get('/api/player/:player', function(req, res) {
 // Send every other request to the React app
 // Define any API routes before this runs
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+    res.sendFile(path.join(__dirname, "./client/build/index.html"));
 });
 
 app.listen(PORT, () => {
-  console.log(`🌎 ==> Server now on port ${PORT}!`);
+    console.log(`🌎 ==> Server now on port ${PORT}!`);
 });
-
-
