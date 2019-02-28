@@ -11,7 +11,7 @@ var PlayerSchema = new Schema({
   // `body` must be of type String
   _id: String,
   team: String,
-  connections: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Connections'}],
+  connections: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Connections'}]
 
 
 });
