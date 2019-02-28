@@ -73,22 +73,37 @@ class App extends Component {
         switchSort: false,
         teamsLoaded: "not-active",
         playerLoaded: "not-active",
-        graphStyle: "Pie"
+        graphStyle: "Pie",
+        playerMap: [],
+        allPlayerMap: [],
+
+        allConnections:[],
+
+        playerMapConnections:[]
 
     };
     componentDidMount() {
-        this.loadTeams();
+        // this.loadTeams();
         this.initPlayerMap();
 
     };
-    initPlayerMap = () =>{
+    initPlayerMap = () => {
+        console.log("init player map")
         API.playerMap()
             .then(data => {
                 // console.log(data.data);
                 // data = data.data.map(x => {x.r = 50});
-                // console.log(data);
-                data.data.forEach(function(element) { element.r = element.hasPlayedWith.length * 5; });
-                D3.playerMap(data.data);
+                console.log(data);
+                data.data.data.forEach(function(element) { element.r = element.connections.length * 5; });
+                this.setState({ playerMap: data.data.data});
+                this.setState({ allPlayerMap: data.data.data});
+
+                this.setState({ playerMapConnections: data.data.connections});
+                this.setState({ allConnections: data.data.connections});
+
+                // this.state.playerMapConnections = data.data.connections
+
+                // D3.playerMap(data.data);
             })
 
 
@@ -144,6 +159,34 @@ class App extends Component {
         // currentState.activeTeam.teamIndex = index
 
     };
+    showFirstLevelConnections = (player) =>{
+        console.log(playerId )
+        let playerId = player._id;
+                // let currentState = { ...this.state };
+                // console.log(currentState);
+        let currentPlayerConnections = this.state.playerMap.filter(x=>x._id == playerId)[0].connections;
+        console.log(currentPlayerConnections);
+        let activeConnections = this.state.allConnections.filter(x=> currentPlayerConnections.some(y => y == x._id))
+        // console.log(activeConnections)
+        let activePlayers = activeConnections.map(x => 
+            {let player = x.players.replace(playerId + "|", "")
+            player = player.replace( "|" + playerId, "")
+            return player}
+        )
+        activePlayers = this.state.allPlayerMap.filter(x=> activePlayers.some(y => y == x._id))
+        activePlayers.unshift(player)
+
+        console.log(activePlayers);
+        // console.log(activeConnections);
+        // console.log(this.state.playerMap)
+        this.setState({playerMapConnections:activeConnections,
+        playerMap:activePlayers})
+        // this.setState({playerMap:activePlayers })
+
+
+    }
+
+
     getPlayer = (playerId, teamIndex, playerIndex) => {
         let currentState = { ...this.state };
         currentState.activePlayer = playerIndex;
@@ -186,7 +229,7 @@ class App extends Component {
         return (
             <div className = "main-container">
 
-            <PlayerMap className = "player-connections">
+            <PlayerMap playerMapPlayerView = {true} firstLevelConnections ={this.showFirstLevelConnections} connections = {this.state.playerMapConnections} playerNodes = {this.state.playerMap} className = "player-connections">
 
             </PlayerMap>
       <TeamBar active = {this.state.teamsLoaded}>

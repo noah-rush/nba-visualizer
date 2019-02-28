@@ -5,19 +5,15 @@ var Schema = mongoose.Schema;
 
 // Using the Schema constructor, create a new NoteSchema object
 // This is similar to a Sequelize model
-var PlayerSchema = new Schema({
+var ConnectionsSchema = new Schema({
   // `title` must be of type String
-  name: { type: String, index: { unique: true }},
-  // `body` must be of type String
-  _id: String,
-  team: String,
-  connections: [ {type: mongoose.Schema.Types.ObjectId, ref: 'Connections'}],
-
-
+  team:String,
+  year:Number,
+  players:{ type: String, index: { unique: true }},
 });
 
 // This creates our model from the above schema, using mongoose's model method
-var Players = mongoose.model("Player", PlayerSchema);
+var Connections = mongoose.model("Connections", ConnectionsSchema);
 
 // Export the Note model
-module.exports = Players;
+module.exports = Connections;

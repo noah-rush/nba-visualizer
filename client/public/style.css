@@ -267,3 +267,6 @@ button {
 .player-map svg image{
 background:rgba(0,0,0,0.5);
 }
+.player-map svg circle, .player-map svg line{
+  transition: all 0.5s;
+}

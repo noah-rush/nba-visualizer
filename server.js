@@ -23,7 +23,7 @@ if (process.env.NODE_ENV === "production") {
 // 
 // const mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/nba_db');
+mongoose.connect('mongodb://localhost/basketball-reference');
 
 
 
@@ -107,10 +107,31 @@ app.get('/api/teams/:team', function(req, res) {
 
 app.get('/api/playerMap', function(req, res) {
     
-    db.Players.find({})
-    .populate('hasPlayedWith')
+
+    // db.Players.find({}).populate("connections").then(function(data){
+    //  let results = {data:data, connections:[]}
+
+    //     res.json(results)
+    // })
+    db.Players.aggregate([
+        { "$project": {
+            "_id": 1,
+            "name": 1,
+            "connections": 1,
+            // connections:
+            "length": { "$size": "$connections" }
+        }},
+        { "$sort": { "length": -1 } },
+        { "$limit": 100 }
+        ])
     .then(function(data){
-        res.json(data);
+
+
+        db.Connections.find({}).then(function(connections){
+            let results = {data:data, connections:connections}
+            res.json(results);
+
+        })
     })
 
 })

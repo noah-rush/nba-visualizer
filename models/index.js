@@ -3,6 +3,8 @@
 module.exports = {
   FirstNames: require("./FirstNames"),
   LastNames: require("./LastNames"),
-  Players: require("./Players")
+  Players: require("./Players"),
+  Connections: require("./Connections")
+
 
 };

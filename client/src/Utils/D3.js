@@ -1,9 +1,11 @@
-import { select, selectAll, enter, event } from 'd3-selection'
+import { select, selectAll, enter, event, each } from 'd3-selection'
 import { scaleLinear, scaleBand } from 'd3-scale'
 import { axisTop, axisBottom, axisLeft } from 'd3-axis'
 import { extent, max, sum } from 'd3-array'
 import { transition } from 'd3-transition'
 import { packSiblings } from 'd3-hierarchy'
+
+
 export default {
 
     playerMap: function(graphObj) {
@@ -18,9 +20,9 @@ export default {
             .attr("height", height)
 
 
-        var packed = packSiblings(graphObj);
+        var packed = packSiblings(graphObj.data);
 
-        console.log(graphObj);
+        // console.log(graphObj);
 
         svg = svg.append("g")
             .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
@@ -28,20 +30,65 @@ export default {
         // var color = d3.scaleOrdinal(d3.schemeCategory10);
 
 
-        select(".player-connections").append("defs").selectAll("pattern").data(graphObj).enter().append("pattern")
-        .attr("id", function(d){
-            return d._id
-        }).attr("x", "0%").attr("y", "0%").attr("height", "100%").attr("width", "100%")
-        .append("image").attr("xlink:href", function(d){
-            return  "https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/" + d._id + ".png";
+        var defs = select(".player-connections").append("defs").selectAll("pattern").data(graphObj.data).enter().append("pattern")
+            .attr("id", function(d) {
+                return d._id
+            }).attr("x", "0%").attr("y", "0%").attr("height", "100%").attr("width", "100%")
 
-            }).attr("x", "0%").attr("y", "0%").attr("height", function(d){
-                return d.r*2 *0.84 + "px";
-            }).attr("width", function(d){
-                return d.r*2*0.84 + "px";
+
+        defs.append("circle").attr("fill", "white").attr("x", "0%").attr("y", "0%").attr("r", "250px").attr("width", "250px")
+        defs.append("image").attr("xlink:href", function(d) {
+            return "https://ak-static.cms.nba.com/wp-content/uploads/headshots/nba/latest/260x190/" + d._id + ".png";
+
+        }).attr("x", "0%").attr("y", "1%").attr("height", function(d) {
+            return d.r * 2 * 0.84 + "px";
+        }).attr("width", function(d) {
+            return d.r * 2 * 0.84 + "px";
+        })
+
+
+
+
+        var lines = svg.selectAll('line')
+            .data(graphObj.connections)
+            .enter()
+            .append("g").append('line')
+            .attr("x1", function(e) {
+                let player = e.players.split("|")[0];
+                // console.log(player)
+                let playerPartner = graphObj.data.filter(x => x._id == player);
+                // console.log(playerPartner);
+                return playerPartner[0].x;
             })
-        var nodes = svg.selectAll(null)
-            .data(graphObj)
+            .attr("y1", function(e) {
+                let player = e.players.split("|")[0]
+                let playerPartner = graphObj.data.filter(x => x._id == player);
+                // console.log(playerPartner);
+                return playerPartner[0].y;
+            })
+
+            .attr("x2", function(e) {
+                let player = e.players.split("|")[1]
+                let playerPartner = graphObj.data.filter(x => x._id == player);
+                // console.log(playerPartner);
+                return playerPartner[0].y;
+
+                // let playerPartner = graphObj.filter(x=>x._id == e._id);
+                // // console.log(playerPartner);
+                // return playerPartner[0].x;
+            })
+            .attr("y2", function(e) {
+                let player = e.players.split("|")[1]
+                let playerPartner = graphObj.data.filter(x => x._id == player);
+                // console.log(playerPartner);
+                return playerPartner[0].y;
+            }).attr("stroke", "black")
+            .attr("stroke-width", "1")
+
+        // })
+
+        let nodes = svg.selectAll('circle')
+            .data(graphObj.data)
             .enter()
             .append("circle")
             .attr("cx", function(d) {
@@ -53,11 +100,26 @@ export default {
             .attr("r", function(d) {
                 return d.r * 0.84
             })
-            .attr("fill", function(d){
-                return "url(#" + d._id  + ")"
-            }).attr("stroke", "lightblue" )
-            
+            .attr("fill", function(d) {
+                return "url(#" + d._id + ")"
+            }).attr("stroke", "lightblue")
+            .attr("onclick", function(d) {
+                return "console.log('dsds'); clickReact('" + d._id + "')";
+            }).on("click",function(){
+                select(this).data(graphObj.data.filter(x=>x.name == "Ben Simmons"))
+            })
 
+
+        // .attr("oncl")
+
+
+        // for (let player of graphObj){
+        //     console.log(player.hasPlayedWith);
+        //     var lines = svg.selectAll(null).data(player.hasPlayedWith)
+        //     .enter()
+        //     .append("path")
+
+        // }
 
 
 
