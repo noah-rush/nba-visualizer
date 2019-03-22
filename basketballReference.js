@@ -15,7 +15,10 @@ var db = require("./models");
 
 
 // 202710
-let startDate = "01/01/2019";
+let startDate = "02/01/2019";
+
+let endDate = "02/01/2019";
+
 
 let currentDate = moment(startDate, "MM/DD/YYYY");
 
@@ -23,7 +26,7 @@ let currentDate = moment(startDate, "MM/DD/YYYY");
 //     console.log(data);
 // })
 
-while (!currentDate.isSame(new Date(), "day")) {
+while (!currentDate.isSame(new Date(endDate), "day")) {
     console.log(currentDate.format("MM"))
 
     axios.get("https://www.basketball-reference.com/boxscores/?month=" + currentDate.format("MM") + "&day=" + currentDate.format("DD") + "&year=" + currentDate.format("YYYY")).then(function(data) {
@@ -84,45 +87,45 @@ while (!currentDate.isSame(new Date(), "day")) {
 
 
                 for (var i = 0; i < team1.players.length; i++) {
-                    db.Players.findOneAndUpdate({ "_id": team1.players[i]._id }, {
-                        "name": team1.players[i].name,
-                        "_id": team1.players[i]._id,
-                        "team": team1.code
-                    }, { upsert: true, new: true }).then(function(result) {
-                        console.log(result);
-                    }).catch(function(error) {
-                        console.log("dude already entered")
-                    })
-                    // for (var j = 0; j < team1.players.length; j++) {
-                    //     if (j != i) {
-                    //         player1Id = team1.players[i]._id;
-                    //         player2Id = team1.players[j]._id;
-                    //         var playerString = player1Id > player2Id ? player2Id + "|" + player1Id : player1Id + "|" + player2Id
-                    //         // console.log(playerString)
-                    //         db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team1.code, year: 2019 }, { upsert: true, new: true }).then(function(result) {
-                    //             // console.log(result);
-                    //             var players = result.players.split("|");
-                    //             db.Players.findOneAndUpdate({ "_id": players[0] }, {
-                    //                 "_id": players[0],
-                    //                 $addToSet: { "connections": result._id }
-                    //             }, { upsert: true, new: true }).then(function(result) {
-                    //                 console.log(result);
-                    //             }).catch(function(error) {
-                    //                 console.log("connection already entered")
-                    //             })
-                    //             db.Players.findOneAndUpdate({ "_id": players[1] }, {
-                    //                 "_id": players[1],
-                    //                 $addToSet: { "connections": result._id }
-                    //             }, { upsert: true, new: true }).then(function(result) {
-                    //                 console.log(result);
-                    //             }).catch(function(error) {
-                    //                 console.log("connection already entered")
-                    //             })
-                    //         })
+                    // db.Players.findOneAndUpdate({ "_id": team1.players[i]._id }, {
+                    //     "name": team1.players[i].name,
+                    //     "_id": team1.players[i]._id,
+                    //     "team": team1.code
+                    // }, { upsert: true, new: true }).then(function(result) {
+                    //     console.log(result);
+                    // }).catch(function(error) {
+                    //     console.log("dude already entered")
+                    // })
+                    for (var j = 0; j < team1.players.length; j++) {
+                        if (j != i) {
+                            player1Id = team1.players[i]._id;
+                            player2Id = team1.players[j]._id;
+                            var playerString = player1Id > player2Id ? player2Id + "|" + player1Id : player1Id + "|" + player2Id
+                            // console.log(playerString)
+                            db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team1.code, year: 2019 }, { upsert: true, new: true }).then(function(result) {
+                                // console.log(result);
+                                var players = result.players.split("|");
+                                db.Players.findOneAndUpdate({ "_id": players[0] }, {
+                                    "_id": players[0],
+                                    $addToSet: { "connections": result._id }
+                                }, { upsert: true, new: true }).then(function(result) {
+                                    console.log(result);
+                                }).catch(function(error) {
+                                    console.log("connection already entered")
+                                })
+                                db.Players.findOneAndUpdate({ "_id": players[1] }, {
+                                    "_id": players[1],
+                                    $addToSet: { "connections": result._id }
+                                }, { upsert: true, new: true }).then(function(result) {
+                                    console.log(result);
+                                }).catch(function(error) {
+                                    console.log("connection already entered")
+                                })
+                            })
 
-                    //         // db.Connection.create
-                    //     }
-                    // }
+                            // db.Connection.create
+                        }
+                    }
                 }
 
 
@@ -130,41 +133,41 @@ while (!currentDate.isSame(new Date(), "day")) {
 
 
                 for (var i = 0; i < team2.players.length; i++) {
-                    db.Players.findOneAndUpdate({ "_id": team2.players[i]._id }, {
-                        "name": team2.players[i].name,
-                        "_id": team2.players[i]._id,
-                        "team": team2.code
-                    }, { upsert: true, new: true }).then(function(result) {
-                        console.log(result);
-                    })
-                //     for (var j = 0; j < team2.players.length; j++) {
-                //         if (j != i) {
-                //             player1Id = team2.players[i]._id;
-                //             player2Id = team2.players[j]._id;
-                //             var playerString = player1Id > player2Id ? player2Id + "|" + player1Id : player1Id + "|" + player2Id
-                //             // console.log(playerString)
-                //             // db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team2.code, year: 2019 }, { upsert: true, new: true }).then(function(result) {
-                //             //     console.log(result);
-                //             //     var players = result.players.split("|");
-                //             //     db.Players.findOneAndUpdate({ "_id": players[0] }, {
-                //             //         "_id": players[0],
-                //             //         $addToSet: { "connections": result._id }
-                //             //     }, { upsert: true, new: true }).then(function(result) {
-                //             //         console.log(result);
-                //             //     })
-                //             //     db.Players.findOneAndUpdate({ "_id": players[1] }, {
-                //             //         "_id": players[1],
-                //             //         $addToSet: { "connections": result._id }
-                //             //     }, { upsert: true, new: true }).then(function(result) {
-                //             //         console.log(result);
-                //             //     })
-                //             // }).catch(function(error) {
-                //             //         console.log("connection already entered")
-                //             //     })
+                    // db.Players.findOneAndUpdate({ "_id": team2.players[i]._id }, {
+                    //     "name": team2.players[i].name,
+                    //     "_id": team2.players[i]._id,
+                    //     "team": team2.code
+                    // }, { upsert: true, new: true }).then(function(result) {
+                    //     console.log(result);
+                    // })
+                    for (var j = 0; j < team2.players.length; j++) {
+                        if (j != i) {
+                            player1Id = team2.players[i]._id;
+                            player2Id = team2.players[j]._id;
+                            var playerString = player1Id > player2Id ? player2Id + "|" + player1Id : player1Id + "|" + player2Id
+                            console.log(playerString)
+                            db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team2.code, year: 2019 }, { upsert: true, new: true }).then(function(result) {
+                                console.log(result);
+                                var players = result.players.split("|");
+                                db.Players.findOneAndUpdate({ "_id": players[0] }, {
+                                    "_id": players[0],
+                                    $addToSet: { "connections": result._id }
+                                }, { upsert: true, new: true }).then(function(result) {
+                                    console.log(result);
+                                })
+                                db.Players.findOneAndUpdate({ "_id": players[1] }, {
+                                    "_id": players[1],
+                                    $addToSet: { "connections": result._id }
+                                }, { upsert: true, new: true }).then(function(result) {
+                                    console.log(result);
+                                })
+                            }).catch(function(error) {
+                                    console.log("connection already entered")
+                                })
 
-                //             // db.Connection.create
-                //         }
-                //     }
+                            // db.Connection.create
+                        }
+                    }
                 }
 
 

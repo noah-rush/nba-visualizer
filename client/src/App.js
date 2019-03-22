@@ -94,7 +94,16 @@ class App extends Component {
                 // console.log(data.data);
                 // data = data.data.map(x => {x.r = 50});
                 console.log(data);
-                data.data.data.forEach(function(element) { element.r = element.connections.length * 5; });
+                data.data.data.forEach(function(element) { 
+                    console.log(element.connections)
+                    if(element.length == "NA"){
+                        element.r = 50
+
+                    }else{
+                        element.r = element.length * 5; 
+                    }
+                    
+                });
                 this.setState({ playerMap: data.data.data});
                 this.setState({ allPlayerMap: data.data.data});
 

@@ -46,11 +46,11 @@ mongoose.connect('mongodb://localhost/basketball-reference');
 
 
 NBA.stats.teamPlayerDashboard({ LeagueID: "00", TeamID: "1610612755", DateFrom: "11/22/2018", DateTo: "11/23/2018", SeasonType: "Regular Season" }).then(function(data) {
-    console.log(data)
+    // console.log(data)
     // res.json(data.playersSeasonTotals);
 
 }).catch(function(eerr) {
-    console.log("eerr");
+    // console.log("eerr");
 })
 
 
@@ -119,15 +119,19 @@ app.get('/api/playerMap', function(req, res) {
             "name": 1,
             "connections": 1,
             // connections:
-            "length": { "$size": "$connections" }
+            "length": { $cond: { if: { $isArray: "$connections" }, then: { $size: "$connections" }, else: "NA"} }
         }},
-        { "$sort": { "length": -1 } },
+        { "$sort": { "length": 1 } },
         { "$limit": 100 }
         ])
     .then(function(data){
+        // console.log(data);
+        var connections = data.map(x=>x.connections);
+        connections = connections.reduce((acc, val) => acc.concat(val), []);
+        console.log(connections)
+        // console.log(connections.flat())
 
-
-        db.Connections.find({}).then(function(connections){
+        db.Connections.find({ "_id": { "$in": connections } }).then(function(connections){
             let results = {data:data, connections:connections}
             res.json(results);
 

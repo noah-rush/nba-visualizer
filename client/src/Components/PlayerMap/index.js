@@ -12,12 +12,20 @@ const styles = {
 
 var PlayerMap = (props) => {
 
-    console.log(props.playerNodes)
+    // console.log(props.playerNodes)
 	var packed = packSiblings(props.playerNodes);
 	// console.log(packed)
     let lines = []
     // console.log(props.connections)
     // console.log(props.playerNodes)
+    // var minY = 0;
+    // var maxY = 0;
+    var extentHeight = extent(props.playerNodes, function(d) { return d.y; });
+    var height = extentHeight[1] - extentHeight[0] + 200;
+      var extentWidth = extent(props.playerNodes, function(d) { return d.x; });
+    var width = extentWidth[1] - extentHeight[0] + 200;
+    var halfWidth = width/2;
+    var halfHeight = height/2
 
     for(let connection of props.connections){
         // console.log(connection.players.split("|")[0])
@@ -27,12 +35,17 @@ var PlayerMap = (props) => {
         let player2 = connection.players.split("|")[1];
         player1 = props.playerNodes.filter(x => x._id == player1);
         player2 = props.playerNodes.filter(x => x._id == player2);
+        // console.log(player1);
+        // console.log(player2);
 
+        if(player1.length != 0 && player2.length != 0){
         connection.x1 = player1[0].x
         connection.y1 = player1[0].y
         connection.x2 = player2[0].x
         connection.y2 = player2[0].y
-        lines.push(<line x1 = {connection.x1} y1 = {connection.y1} x2 = {connection.x2} y2 =  {connection.y2} stroke = "black" key = {connection._id}></line>            )
+        lines.push(<line x1 = {connection.x1} y1 = {connection.y1} x2 = {connection.x2} y2 =  {connection.y2} stroke = "black" key = {connection._id}></line>)
+        // if(connection.y2)
+        }
 
     }
 // console.log(lines)
@@ -57,29 +70,35 @@ var PlayerMap = (props) => {
     return (
         <div className = "player-map">
 
-        <svg className = {props.className}  width="1000" height="1000">
+        <svg height = {height}  width = {width} className = {props.className}  >
 		{props.playerNodes.map((player,index) => (
         	<pattern id = {player._id} x = "0%" y ="0%" height = "100%" width= "100%" key = {player._id}>
         		<circle fill="white" r = "250px" >
+
         		</circle>
                  <image 
                 xlinkHref= {`https://d2cwpp38twqe55.cloudfront.net/req/201902151/images/players/${player._id}.jpg`}
                     width = { player.r * 2 * 0.84 + "px"}
                     height = { player.r * 2 * 0.84 + "px"}
                     x = "0%"
-                    y = "1%"></image>
+                    y = "0%"></image>
         	</pattern>
         	)
         )}
 
-        <g className = "graph-inner"  width="1000" height="1000">
-        <g style={styles}>
+        <g className = "graph-inner" transform = {`translate(${halfWidth},${halfHeight})`} >
+        <g>
 
             {lines}
          
         	
         {props.playerNodes.map((player,index) => (
-        	<circle onClick = {() => props.firstLevelConnections(player)} fill = {"url(#" + player._id + ")"} cx = {player.x} cy ={player.y} r ={player.r*0.84} stroke = "lightblue" key = {player._id}></circle>
+            <g onClick = {() => props.firstLevelConnections(player)} className = "group" transform = {`translate(${player.x},${player.y})`}>
+        	<circle  fill = {"url(#" + player._id + ")"}  r ={player.r*0.84} stroke = "lightblue" key = {player._id}>
+            </circle>
+                <text x="0%" y="0%" text-anchor="middle" stroke="#51c5cf" stroke-width="1px" dy=".3em" width ={player.r*0.84} >{player.name}</text>
+
+            </g>
         	)
         )}
 
