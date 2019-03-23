@@ -5,6 +5,8 @@ import { axisTop, axisBottom, axisLeft } from 'd3-axis'
 import { extent, max, sum } from 'd3-array'
 import { transition } from 'd3-transition'
 import { packSiblings } from 'd3-hierarchy'
+import DragScrollProvider from 'drag-scroll-provider'
+import Autocomplete from './autocomplete'
 
 const styles = { 
         transform: `translate(50%, 50%)` 
@@ -12,7 +14,7 @@ const styles = {
 
 var PlayerMap = (props) => {
 
-    // console.log(props.playerNodes)
+    // console.log(props.allPlayers)
 	var packed = packSiblings(props.playerNodes);
 	// console.log(packed)
     let lines = []
@@ -21,12 +23,12 @@ var PlayerMap = (props) => {
     // var minY = 0;
     // var maxY = 0;
     var extentHeight = extent(props.playerNodes, function(d) { return d.y; });
-    var height = extentHeight[1] - extentHeight[0] + 200;
+    var height = extentHeight[1] - extentHeight[0] + 500;
       var extentWidth = extent(props.playerNodes, function(d) { return d.x; });
-    var width = extentWidth[1] - extentHeight[0] + 200;
+    var width = extentWidth[1] - extentHeight[0] + 500;
     var halfWidth = width/2;
     var halfHeight = height/2
-
+    // console.log(props)
     for(let connection of props.connections){
         // console.log(connection.players.split("|")[0])
         // console.log(connection.players.split("|")[1])
@@ -68,12 +70,19 @@ var PlayerMap = (props) => {
 
 
     return (
-        <div className = "player-map">
 
+        <DragScrollProvider threshold={0.015}>
+    {({ onMouseDown, ref }) => (
+      
+        <div className="player-map scrollable"
+          ref={ref}
+          onMouseDown={onMouseDown}>
+
+        <a onClick = {props.reset} className = "reset-playerMap">Back To All</a>
         <svg height = {height}  width = {width} className = {props.className}  >
 		{props.playerNodes.map((player,index) => (
         	<pattern id = {player._id} x = "0%" y ="0%" height = "100%" width= "100%" key = {player._id}>
-        		<circle fill="white" r = "250px" >
+        		<circle fill={props.activePlayer == player._id ? "red" : "white"} r = "250px" >
 
         		</circle>
                  <image 
@@ -96,7 +105,7 @@ var PlayerMap = (props) => {
             <g onClick = {() => props.firstLevelConnections(player)} className = "group" transform = {`translate(${player.x},${player.y})`}>
         	<circle  fill = {"url(#" + player._id + ")"}  r ={player.r*0.84} stroke = "lightblue" key = {player._id}>
             </circle>
-                <text x="0%" y="0%" text-anchor="middle" stroke="#51c5cf" stroke-width="1px" dy=".3em" width ={player.r*0.84} >{player.name}</text>
+                <text x="0%" y="0%" textAnchor="middle" stroke="#51c5cf" strokeWidth="1px" dy=".3em" width ={player.r*0.84} >{player.name}</text>
 
             </g>
         	)
@@ -110,6 +119,8 @@ var PlayerMap = (props) => {
         </svg>
 
       </div>
+      )}
+    </DragScrollProvider>
     )
 
 }

@@ -323,7 +323,7 @@ button {
 .player-map{
   width:100vw;
   height:100vh;
-  overflow: auto;
+  overflow: scroll;
   max-width: 100%;
   text-align: center;
 }
@@ -336,4 +336,21 @@ button {
     /*left: 50%;*/
     /*transform: translate(-50%, -50%);*/
 
+}
+
+.reset-playerMap{
+    position: fixed;
+    top:0px;
+    left:0px;
+    background:red;
+    z-index:20;
+padding:20px;
+color:white !important;
+}
+
+.player-map-autocomplete{
+    position: fixed;
+    top:60px;
+    left:0px;
+    z-index: 20;
 }

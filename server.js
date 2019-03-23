@@ -122,17 +122,18 @@ app.get('/api/playerMap', function(req, res) {
             "length": { $cond: { if: { $isArray: "$connections" }, then: { $size: "$connections" }, else: "NA"} }
         }},
         { "$sort": { "length": 1 } },
-        { "$limit": 100 }
+        { "$limit": 300 }
         ])
     .then(function(data){
-        // console.log(data);
+        console.log(data);
+        data = data.filter(x=>x.name != undefined)
         var connections = data.map(x=>x.connections);
         connections = connections.reduce((acc, val) => acc.concat(val), []);
         console.log(connections)
         // console.log(connections.flat())
 
         db.Connections.find({ "_id": { "$in": connections } }).then(function(connections){
-            let results = {data:data, connections:connections}
+            let results = {data:data.reverse(), connections:connections}
             res.json(results);
 
         })

@@ -15,9 +15,9 @@ var db = require("./models");
 
 
 // 202710
-let startDate = "02/01/2019";
+let startDate = "12/01/2018";
 
-let endDate = "02/01/2019";
+let endDate = "12/31/2018";
 
 
 let currentDate = moment(startDate, "MM/DD/YYYY");
