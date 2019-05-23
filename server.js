@@ -118,21 +118,49 @@ app.get('/api/playerMap', function(req, res) {
             "_id": 1,
             "name": 1,
             "connections": 1,
+            "team":1,
             // connections:
             "length": { $cond: { if: { $isArray: "$connections" }, then: { $size: "$connections" }, else: "NA"} }
         }},
-        { "$sort": { "length": 1 } },
+        { "$group" : {"_id":"$team",
+                        children: {
+                            $push: {
+                              name: "$name",
+                              _id :"$_id",
+                              team:"$team",
+                              connections: "$connections",
+                                "length": { $cond: { if: { $isArray: "$connections" }, then: { $size: "$connections" }, else: "NA"} }
+
+                            }
+                          }
+                      }
+                    },
         { "$limit": 300 }
         ])
     .then(function(data){
-        console.log(data);
-        data = data.filter(x=>x.name != undefined)
-        var connections = data.map(x=>x.connections);
-        connections = connections.reduce((acc, val) => acc.concat(val), []);
-        console.log(connections)
+        // console.log(data);
+        // var flatPlayers
+        // data = data.filter(x=>x.name != undefined)
+        // var connections = data.map(x=>x.connections);
+        // connections = connections.reduce((acc, val) => acc.concat(val), []);
+        // console.log(connections)
         // console.log(connections.flat())
+        data = data.filter(x => x._id!= null);
 
+        let players = data.map(x => x.children)
+        players = players.reduce((acc, val) => acc.concat(val), []);
+
+        // console.log(players);
+        let connections = players.map(x => x.connections);
+        // console.log(connections);
+        connections = connections.reduce((acc, val) => acc.concat(val), []);
+        // console.log(connections);
+        connections = connections.filter(x => x != undefined);
+        console.log(connections);
+
+         // connections = [];
         db.Connections.find({ "_id": { "$in": connections } }).then(function(connections){
+            console.log(connections);
             let results = {data:data.reverse(), connections:connections}
             res.json(results);
 

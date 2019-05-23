@@ -302,7 +302,7 @@ button {
     transition: all 0.5s;
 }
 
-.group text {
+.group-player text {
     width: 100px;
     opacity: 0;
     position: relative;
@@ -311,13 +311,13 @@ button {
     height: 100px;
 }
 
-.group:hover text {
+.group-player:hover text {
     opacity: 1;
     z-index: 10;
 
 }
 
-.group:hover circle {
+.group-player:hover circle {
     fill: white;
 }
 .player-map{

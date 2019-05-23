@@ -15,10 +15,11 @@ var db = require("./models");
 
 
 // 202710
-let startDate = "12/01/2018";
+let startDate = "12/01/2017";
 
-let endDate = "12/31/2018";
+let endDate = "12/31/2017";
 
+let year = "2017";
 
 let currentDate = moment(startDate, "MM/DD/YYYY");
 
@@ -36,7 +37,7 @@ while (!currentDate.isSame(new Date(endDate), "day")) {
         $(".gamelink a").each(function(e) {
             hrefs.push($(this).attr("href"))
         })
-        console.log(hrefs);
+        // console.log(hrefs);
         for (var i = 0; i < hrefs.length; i++) {
             axios.get("https://www.basketball-reference.com" + hrefs[i]).then(function(data) {
                 const $ = cheerio.load(data.data);
@@ -81,8 +82,8 @@ while (!currentDate.isSame(new Date(endDate), "day")) {
                         team2.players.push(player)
                     }
                 })
-                console.log(team1);
-                console.log(team2);
+                // console.log(team1);
+                // console.log(team2);
 
 
 
@@ -102,7 +103,7 @@ while (!currentDate.isSame(new Date(endDate), "day")) {
                             player2Id = team1.players[j]._id;
                             var playerString = player1Id > player2Id ? player2Id + "|" + player1Id : player1Id + "|" + player2Id
                             // console.log(playerString)
-                            db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team1.code, year: 2019 }, { upsert: true, new: true }).then(function(result) {
+                            db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team1.code, year: year }, { upsert: true, new: true }).then(function(result) {
                                 // console.log(result);
                                 var players = result.players.split("|");
                                 db.Players.findOneAndUpdate({ "_id": players[0] }, {
@@ -145,8 +146,8 @@ while (!currentDate.isSame(new Date(endDate), "day")) {
                             player1Id = team2.players[i]._id;
                             player2Id = team2.players[j]._id;
                             var playerString = player1Id > player2Id ? player2Id + "|" + player1Id : player1Id + "|" + player2Id
-                            console.log(playerString)
-                            db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team2.code, year: 2019 }, { upsert: true, new: true }).then(function(result) {
+                            // console.log(playerString)
+                            db.Connections.findOneAndUpdate({ players: playerString }, { players: playerString, team: team2.code, year: year }, { upsert: true, new: true }).then(function(result) {
                                 console.log(result);
                                 var players = result.players.split("|");
                                 db.Players.findOneAndUpdate({ "_id": players[0] }, {
@@ -154,6 +155,8 @@ while (!currentDate.isSame(new Date(endDate), "day")) {
                                     $addToSet: { "connections": result._id }
                                 }, { upsert: true, new: true }).then(function(result) {
                                     console.log(result);
+                                }).catch(function(error) {
+                                    console.log("connection already entered")
                                 })
                                 db.Players.findOneAndUpdate({ "_id": players[1] }, {
                                     "_id": players[1],
