@@ -8,7 +8,7 @@ function getSuggestions(value) {
 
   return inputLength === 0
     ? []
-    : this.state.allPlayerMap.filter(suggestion => {
+    : this.state.suggestionMasterList.filter(suggestion => {
         const keep =
           count < 5 && suggestion.label.slice(0, inputLength).toLowerCase() === inputValue;
 

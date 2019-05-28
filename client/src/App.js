@@ -126,18 +126,23 @@ class App extends Component {
         }
         var svgHeight = parseFloat(document.getElementsByClassName('player-connections')[0].getAttribute('height'));
         var svgWidth = parseFloat(document.getElementsByClassName('player-connections')[0].getAttribute('height'));
-        let allPlayers = [...this.state.allPlayerMap]
-        allPlayers = allPlayers.map((x, index) => {
-            x.r = x.length * 8;
-            return x
-        });
-        this.setState({
+        // let allPlayers = [...this.state.allPlayerMap]
+        // allPlayers = allPlayers.map((x, index) => {
+        //     x.r = x.length * 8;
+        //     return x
+        // });
+        // this.setState({
 
-            playerMap: allPlayers
-        })
-        this.setState({ playerMapFocus: suggestion.index })
-        let moveY = suggestion.y.map(svgHeight / -2, svgHeight / 2, 0, svgHeight) - window.innerHeight / 2;
-        let moveX = suggestion.x.map(svgWidth / -2, svgWidth / 2, 0, svgWidth) - window.innerWidth / 2;
+        //     playerMap: allPlayers
+        // })
+        // this.setState({ playerMapFocus: suggestion.index })
+        let x = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[4]);
+        let y = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[5]);
+        console.log(x);
+        console.log(y);
+
+        let moveY = y.map(svgHeight / -2, svgHeight / 2, 0, svgHeight) - window.innerHeight / 2;
+        let moveX = x.map(svgWidth / -2, svgWidth / 2, 0, svgWidth) - window.innerWidth / 2;
 
         document.getElementsByClassName('player-map')[0].scrollTop = moveY;
         document.getElementsByClassName('player-map')[0].scrollLeft = moveX;
@@ -153,7 +158,7 @@ class App extends Component {
         let count = 0;
 
         return inputLength === 0 ? [] :
-            this.state.allPlayerMap.filter(suggestion => {
+            this.state.suggestionMasterList.filter(suggestion => {
                 // console.log(suggestion.name);
                 // let keep = ""
                 // if(suggestion.name){
@@ -178,6 +183,8 @@ class App extends Component {
                 players.name = "PlayerMap"
                 players.children = data.data.data
                 console.log(players);
+                                let suggestionMasterList = []
+
                 players.children.forEach(function(element, index) {
                     element.index = index;
                     if (element.children.length == "NA") {
@@ -194,14 +201,23 @@ class App extends Component {
                             x.r = x.length * 8;
                             x.value = x.length * 8;
                         }
+                      suggestionMasterList.push(x);
+
                     })
 
                 });
+                // for(let i = 0; i<players.children.length; i++){
+                //     for(let j =0; j<players.children[i].children.length; j++){
+                //     }
+
+                // }
+
 
                 // console.log(players);
                 this.setState({ playerMap: players,
                     allPlayerMap: players,
-                    suggestions: players,
+                    suggestionMasterList: suggestionMasterList,
+                    suggestions: suggestionMasterList,
                     playerMapConnections: data.data.connections,
                     allConnections: data.data.connections
                  });
@@ -268,7 +284,7 @@ class App extends Component {
         let allConnections = [...this.state.allConnections];
 
         let allPlayers = {...this.state.allPlayerMap}
-        console.log(allPlayers);
+        // console.log(allPlayers);
       
         this.setState({
             playerMapConnections: allConnections,
@@ -294,7 +310,7 @@ class App extends Component {
             player = player.replace("|" + playerId, "")
             return player
         })
-        console.log(activePlayerIDs);
+        // console.log(activePlayerIDs);
         activePlayerIDs.unshift(playerId);
 
 
@@ -396,15 +412,15 @@ class App extends Component {
         return (
             <div className = "main-container">
   {
-        // <Autocomplete
-        //  suggestions = {this.state.suggestions} 
-        //  className = "search-playerMap" 
-        //  value = {this.state.searchValue}
-        //  handleChange = {this.handleChange}
-        //  handleSuggestionsFetchRequested = {this.handleSuggestionsFetchRequested}
-        //  handleSuggestionsClearRequested = {this.handleSuggestionsClearRequested}
-        //  handleSelectionSelected = {this.handleSelectionSelected}
-        //  ></Autocomplete>
+        <Autocomplete
+         suggestions = {this.state.suggestions} 
+         className = "search-playerMap" 
+         value = {this.state.searchValue}
+         handleChange = {this.handleChange}
+         handleSuggestionsFetchRequested = {this.handleSuggestionsFetchRequested}
+         handleSuggestionsClearRequested = {this.handleSuggestionsClearRequested}
+         handleSelectionSelected = {this.handleSelectionSelected}
+         ></Autocomplete>
      }
 
             <PlayerMap  reset = {this.resetPlayerMap} activePlayer ={this.state.playerMapFocus} playerMapPlayerView = {true} firstLevelConnections ={this.showFirstLevelConnections} connections = {this.state.playerMapConnections} playerNodes = {this.state.playerMap} className = "player-connections">

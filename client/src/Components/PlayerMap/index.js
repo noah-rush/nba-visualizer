@@ -20,17 +20,17 @@ var PlayerMap = (props) => {
     //     props.playerNodes[props.activePlayer
     // console.log(props.playerNodes);
     // let structure = hierarchy(props.playerNodes)
-    console.log(props.playerNodes)
+    // console.log(props.playerNodes)
     var height = 600 + props.playerNodes.children.length * 120;
     var width = 600 + props.playerNodes.children.length * 120
 
-    let root = pack().size([width, height]).padding(5)(hierarchy(props.playerNodes)
+    let root = pack().size([width, height]).padding(20)(hierarchy(props.playerNodes)
         .sum(d => d.r));
-    console.log(root);
+    // console.log(root);
     // console.log(root.descendants());
     let nodes = root.descendants();
     // var packed = packSiblings(props.playerNodes);
-    console.log(nodes)
+    // console.log(nodes)
     nodes - nodes.shift();
     let lines = []
     // console.log(props.connections)
@@ -137,7 +137,7 @@ var PlayerMap = (props) => {
             
         {nodes.map((player,index) => (
 
-            <g key = {player.data._id} onClick = {player.depth == 2 ? () => props.firstLevelConnections(player) : () =>{}} className = {player.depth == 2 ? "group group-player" : player.depth == 1 ? "group group-team" : ""} width = { player.r * 2 * 0.84 + "px"}  transform = {`translate(${player.x},${player.y})`}>
+            <g key = {player.data._id} id = {`move-${player.data._id}`} onClick = {player.depth == 2 ? () => props.firstLevelConnections(player) : () =>{}} className = {player.depth == 2 ? "group group-player" : player.depth == 1 ? "group group-team" : ""} width = { player.r * 2 * 0.84 + "px"}  transform = {`translate(${player.x},${player.y})`}>
            
             {player.depth == 1 && player.data.children.length ==1 ?
              <circle  fill = {"url(#" + player.data._id + ")"}  r ={player.r*1.5} stroke = "lightblue"  strokeWidth = {player.depth == 2 ? "1px" : player.depth == 1 ? "0px" : "0px"}>
