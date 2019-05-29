@@ -9,6 +9,7 @@ import PlayerCard from "./Components/Player/PlayerCard.js";
 import PlayerBar from "./Components/Player/PlayerBar.js";
 import PlayerMap from "./Components/PlayerMap";
 import Autocomplete from './Components/PlayerMap/autocomplete'
+import ActivePlayer from './Components/PlayerMap/activePlayer'
 
 // import PlayerStats from "./Components/Player/PlayerStats.js";
 import TeamStatTable from "./Components/TeamStatTable/TeamStatTable.js";
@@ -17,8 +18,11 @@ import API from "./Utils/API";
 import D3 from "./Utils/D3";
 import GRAPHS from "./Utils/GRAPHS";
 import AUTOCOMPLETE from "./Utils/Autocomplete";
+import CONNECTIONS from "./Utils/CONNECTIONS";
+
 import deburr from 'lodash/deburr';
 import Autosuggest from 'react-autosuggest';
+// import Autosuggest from 'react-autosuggest';
 
 
 
@@ -136,16 +140,21 @@ class App extends Component {
         //     playerMap: allPlayers
         // })
         // this.setState({ playerMapFocus: suggestion.index })
-        let x = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[4]);
-        let y = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[5]);
-        console.log(x);
-        console.log(y);
+        // document.getElementById('move-' + suggestion._id).click()
+        let player = {};
+        player.data = suggestion
+        this.showFirstLevelConnections(player)
 
-        let moveY = y.map(svgHeight / -2, svgHeight / 2, 0, svgHeight) - window.innerHeight / 2;
-        let moveX = x.map(svgWidth / -2, svgWidth / 2, 0, svgWidth) - window.innerWidth / 2;
+        // let x = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[4]);
+        // let y = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[5]);
+        // console.log(x);
+        // console.log(y);
 
-        document.getElementsByClassName('player-map')[0].scrollTop = moveY;
-        document.getElementsByClassName('player-map')[0].scrollLeft = moveX;
+        // let moveY = y.map(svgHeight / -2, svgHeight / 2, 0, svgHeight) - window.innerHeight / 2;
+        // let moveX = x.map(svgWidth / -2, svgWidth / 2, 0, svgWidth) - window.innerWidth / 2;
+
+        // document.getElementsByClassName('player-map')[0].scrollTop = moveY;
+        // document.getElementsByClassName('player-map')[0].scrollLeft = moveX;
 
 
 
@@ -174,7 +183,15 @@ class App extends Component {
     }
 
 
+    teamFilter = (tricode)=>{
+                let allPlayerMap = JSON.parse(JSON.stringify({...this.state.allPlayerMap}));
+                let team = allPlayerMap.children.filter(x => x._id == tricode.toLowerCase());
+                let playerMap = {}
+                playerMap.children = team;
+                playerMap.name = "PlayerMap"
+                this.setState({ playerMap: playerMap})
 
+    }
     initPlayerMap = () => {
         console.log("init player map")
         API.playerMap()
@@ -187,12 +204,6 @@ class App extends Component {
 
                 players.children.forEach(function(element, index) {
                     element.index = index;
-                    if (element.children.length == "NA") {
-                        // element.r = 50
-
-                    } else {
-                        // element.r = element.children.length * 8;
-                    }
                     element.children.forEach(function(x, index) {
                         if (x.length == "NA") {
                             x.r = 50
@@ -294,79 +305,13 @@ class App extends Component {
 
     }
     showFirstLevelConnections = (player) => {
-        // console.log(player)
-        let playerId = player.data._id;
-        let playerConnections = player.data.connections
-        // console.log(playerConnections)
-        let allPlayerMap = JSON.parse(JSON.stringify({...this.state.allPlayerMap}));
-        // this.setState({
-        //     playerMap: allPlayerMap
-        // })
-      
+        let newState = CONNECTIONS.firstLevelConnections(player, this.state.allPlayerMap, this.state.allConnections)
+        this.setState(newState)
+    }
 
-        let activeConnections = this.state.allConnections.filter(x => playerConnections.some(y => y == x._id))
-        let activePlayerIDs = activeConnections.map(x => {
-            let player = x.players.replace(playerId + "|", "")
-            player = player.replace("|" + playerId, "")
-            return player
-        })
-        // console.log(activePlayerIDs);
-        activePlayerIDs.unshift(playerId);
-
-
-
-
-        let newPlayerMap = allPlayerMap.children.filter(
-                                                    function(team){ 
-                                                        // console.log(team.children);
-                                                        let teamChildrenFilter = team.children.filter(player => activePlayerIDs.some(x => x==player._id));
-                                                            // console.log(teamChildrenFilter);
-                                                        if (teamChildrenFilter.length == 0){
-                                                            return false;
-                                                        }else{
-                                                            return true;
-                                                        } })
-        activePlayerIDs.shift();
-
-
-        newPlayerMap = newPlayerMap.map(team => {
-             team.children = team.children.filter(player => activePlayerIDs.some(x => x==player._id));
-            return team;
-        })
-        // console.log(newPlayerMap);
-        // console.log(player)
-        newPlayerMap.map(x => {
-            if(x._id == player.data.team){
-                x.children.unshift(player.data)
-                return x;
-            }else{
-                return x;
-            }
-        })
-        // newPlayerMap[player.data.team].unshift(player.data);
-        // newPlayerMap
-        newPlayerMap = {
-            name:"PlayerMap",
-            children: newPlayerMap
-        }
-        // console.log(newPlayerMap);
-        this.setState({playerMap: newPlayerMap,
-            playerMapConnections: activeConnections})
-
-        // activePlayers = allPlayerMap.filter(x => activePlayers.some(y => y == x._id))
-        // activePlayers.unshift(player)
-        // activePlayers = activePlayers.map((x, index) => {
-        //     x.r = x.length * 8;
-        //     return x
-        // });
-        // // console.log(activePlayers)
-        // this.setState({
-        //     playerMapConnections: activeConnections,
-        //     playerMap: activePlayers,
-        //     playerMapFocus: 0
-        // })
-
-
+      showSecondLevelConnections = (player) => {
+        let newState = CONNECTIONS.nthLevelConnections(2, player, this.state.playerMap, this.state.allPlayerMap,this.state.activeConnections, this.state.allConnections)
+        // this.setState(newState)
     }
 
 
@@ -411,6 +356,7 @@ class App extends Component {
     render() {
         return (
             <div className = "main-container">
+            <ActivePlayer secondLevel = {this.showSecondLevelConnections} active = {this.state.playerMapFocus}></ActivePlayer>
   {
         <Autocomplete
          suggestions = {this.state.suggestions} 
@@ -433,7 +379,7 @@ class App extends Component {
               logo = {team.logo}
               index = {index}
               active = {index == this.state.activeTeam ? "active" : ""}
-
+              teamFilter = {this.teamFilter}
               tricode = {team.tricode}
               getTeam = {this.getTeam}>
         </TeamItem>

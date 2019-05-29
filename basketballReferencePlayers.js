@@ -22,7 +22,7 @@ var db = require("./models");
 // NBA.stats.scoreboard({LeagueID: "00", DayOffset: "0", gameDate:startDate}).then(function(data){
 //     console.log(data);
 // })
-var first = "a", last = "z";
+var first = "c", last = "f";
 for(var i = first.charCodeAt(0); i <= last.charCodeAt(0); i++) {
     var alphabet =  eval("String.fromCharCode(" + i + ")");
     console.log(alphabet);

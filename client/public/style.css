@@ -101,6 +101,11 @@ body {
     opacity: 0;
     transition: all 1s;
     position: relative;
+    position: fixed;
+    bottom:0;
+    opacity: 1;
+    background:white;
+
 
 }
 
@@ -268,7 +273,7 @@ tbody td.headcol {
     font-size: 0px;
 }
 
-button {
+.logo-sidebar button {
     background: transparent;
     color: white;
     border: 0;
@@ -353,4 +358,9 @@ color:white !important;
     top:60px;
     left:0px;
     z-index: 20;
+}
+.active-player{
+    position:fixed;
+    top:0px;
+    right:0px;r
 }

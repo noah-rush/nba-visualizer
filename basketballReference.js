@@ -15,9 +15,9 @@ var db = require("./models");
 
 
 // 202710
-let startDate = "10/01/2017";
+let startDate = "12/01/2016";
 
-let endDate = "11/01/2017";
+let endDate = "1/01/2017";
 
 let year = "2017";
 

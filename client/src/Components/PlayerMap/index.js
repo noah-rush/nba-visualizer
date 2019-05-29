@@ -24,7 +24,7 @@ var PlayerMap = (props) => {
     var height = 600 + props.playerNodes.children.length * 120;
     var width = 600 + props.playerNodes.children.length * 120
 
-    let root = pack().size([width, height]).padding(20)(hierarchy(props.playerNodes)
+    let root = pack().size([width, height]).padding(25)(hierarchy(props.playerNodes)
         .sum(d => d.r));
     // console.log(root);
     // console.log(root.descendants());
