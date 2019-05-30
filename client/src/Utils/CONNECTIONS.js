@@ -5,7 +5,7 @@ export default {
         let playerId = player.data._id;
         let playerConnections = player.data.connections
         // let allPlayerMap = JSON.parse(JSON.stringify({ allPlayers }));
-        let allPlayerMap = JSON.parse(JSON.stringify({...allPlayers}))
+        let allPlayerMap = JSON.parse(JSON.stringify({ ...allPlayers }))
         let activeConnections = allConnections.filter(x => playerConnections.some(y => y == x._id))
         let activePlayerIDs = activeConnections.map(x => {
             let player = x.players.replace(playerId + "|", "")
@@ -97,39 +97,85 @@ export default {
 
 
     },
-    nthLevelConnections(n, player, firstLevel, allPlayers, activeConnections, allConnections){
-        let allPlayerMap = JSON.parse(JSON.stringify({...allPlayers}))
+    nthLevelConnections(n, player, firstLevel, allPlayers, activeConnections, allConnections) {
+        let allPlayerMap = JSON.parse(JSON.stringify({ ...allPlayers }))
         let playersToIgnore = []
-        let playerConnections =[]
+        let playerConnections = []
         let firstLevelConnections = activeConnections;
+        console.log(activeConnections)
+        console.log(firstLevelConnections)
+
         playersToIgnore.push(player.data._id);
-        for(var i =0; i<firstLevel.children.length; i++){
-            for(var j = 0; j<firstLevel.children[i].children.length; j++){
+        for (var i = 0; i < firstLevel.children.length; i++) {
+            for (var j = 0; j < firstLevel.children[i].children.length; j++) {
                 playersToIgnore.push(firstLevel.children[i].children[j]._id)
             }
         }
-        playersToIgnore.shift();
+        // playersToIgnore.shift();
         console.log(playersToIgnore)
         let newPlayerMap = {}
-        for(var i = 1; i<n; i++){
+        for (var i = 1; i < n; i++) {
+            let nthLevelPlayerIds = [];
             let nthLevelConnections = allConnections.filter(
-                function(x){
-                    let player1 = x.players.split("|")[0];
-                    let player2 = x.players.split("|")[1];
-                     player1 = playersToIgnore.some(x => player1 == x);
-                     player2 = playersToIgnore.some(x => player2 == x);
-                    if(player1 && player2){
+                function(x) {
+                    let player1Id = x.players.split("|")[0];
+                    let player2Id = x.players.split("|")[1];
+                    let player1 = playersToIgnore.some(x => player1Id == x);
+                    let player2 = playersToIgnore.some(x => player2Id == x);
+                    // console.log(player1Id +": " + player1 )
+                    // console.log(player2Id +": " + player2 )
+
+                    if (player1 && player2) {
                         return false
                     }
-                    if(player1 && !player2){
+                    if (player1 && !player2) {
+                        console.log(player1Id + " + " + player2Id + " added")
+                        nthLevelPlayerIds.push(player2Id)
                         return true
                     }
-                    if(!player1 && player2){
+                    if (!player1 && player2) {
+                        console.log(player1Id + " + " + player2Id + " added")
+                        nthLevelPlayerIds.push(player1Id)
+
                         return true
                     }
 
                 })
-            console.log(nthLevelConnections)
+            nthLevelPlayerIds = [...new Set(nthLevelPlayerIds)];
+            // console.log(nthLevelPlayerIds);
+
+            let nthPlayerMap = allPlayerMap.children.filter(
+                function(team) {
+                    // console.log(team.children);
+                    let teamChildrenFilter = team.children.filter(player => nthLevelPlayerIds.some(x => x == player._id));
+                    // console.log(teamChildrenFilter);
+                    if (teamChildrenFilter.length == 0) {
+                        return false;
+                    } else {
+                        return true;
+                    }
+                })
+            nthPlayerMap = nthPlayerMap.map(team => {
+                team.children = team.children.filter(player => nthLevelPlayerIds.some(x => x == player._id));
+                return team;
+            })
+            console.log(nthPlayerMap)
+            let newPlayerMap = {
+                name: i + "level",
+                children: nthPlayerMap
+            }
+            firstLevel.type = "nest"
+            newPlayerMap.children.unshift(
+                firstLevel
+            )
+
+            console.log(newPlayerMap)
+            return {
+            playerMap: newPlayerMap,
+            playerMapConnections: firstLevelConnections.concat(nthLevelConnections)
+            // playerMapFocus: player
+        }
+            // console.log(nthLevelConnections)
             // let activeConnections = allConnections.filter(x => playerConnections.some(y => y == x._id))
             // let activePlayerIDs = activeConnections.map(x => {
             //     let player = x.players.replace(playerId + "|", "")
@@ -137,7 +183,7 @@ export default {
             //     return player
             // })
             // activePlayerIDs.unshift(playerId);
-           
+
 
         }
 

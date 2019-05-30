@@ -204,7 +204,10 @@ class App extends Component {
 
                 players.children.forEach(function(element, index) {
                     element.index = index;
+                    element.type = "team"
                     element.children.forEach(function(x, index) {
+                        x.type = "player"
+
                         if (x.length == "NA") {
                             x.r = 50
                             x.value = 50;
@@ -310,8 +313,8 @@ class App extends Component {
     }
 
       showSecondLevelConnections = (player) => {
-        let newState = CONNECTIONS.nthLevelConnections(2, player, this.state.playerMap, this.state.allPlayerMap,this.state.activeConnections, this.state.allConnections)
-        // this.setState(newState)
+        let newState = CONNECTIONS.nthLevelConnections(2, player, this.state.playerMap, this.state.allPlayerMap,this.state.playerMapConnections, this.state.allConnections)
+        this.setState(newState)
     }
 
 
