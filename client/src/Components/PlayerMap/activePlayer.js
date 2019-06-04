@@ -9,8 +9,9 @@ var ActivePlayer = (props) => {
  	       <div className = "active-player-name">
  	       		{props.active.data.name}
  	       </div>
- 	       <button onClick = {() => {props.secondLevel(props.active)}}>Show Second Level Connections</button>
- 	       </div>
+ 	       <input value = {props.depthNumber} type = "number" min ="1" onChange ={props.handleNumberChange}></input>
+
+	 	       </div>
  	       :""
       )
 

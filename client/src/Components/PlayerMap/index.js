@@ -31,7 +31,7 @@ var PlayerMap = (props) => {
     nodes - nodes.shift();
     // let lines = []
   
-
+    console.log(nodes)
     // for (let connection of props.connections) {
       
 
@@ -86,7 +86,7 @@ var PlayerMap = (props) => {
         <svg height = {width}  width = {height} className = {props.className}  >
         {
             nodes.map((player,index) => (
-            <pattern id = {player.data._id} x = "0%" y ="0%" height = "100%" width= "100%" key = {player.data._id}>
+            <pattern id = {player.data._id + player.depth} x = "0%" y ="0%" height = "100%" width= "100%" key = {player.data._id + player.depth}>
 
             {player.data.type == "player" ? <circle fill={props.activePlayer === index ? "red" : "white"} r = "300px" ></circle>:""}
 
@@ -118,13 +118,13 @@ var PlayerMap = (props) => {
             
         {nodes.map((player,index) => (
 
-            <g fill = {player.data.type == "nest" ? "black" : ""} key = {player.data._id} id = {`move-${player.data._id}`} onClick = {player.data.type == "player" ? () => props.firstLevelConnections(player) : () =>{}} className = {player.data.type == "player" ? "group group-player" : player.data.type == "team" ? "group group-team" : "group-nest"} width = { player.r * 2 * 0.84 + "px"}  transform = {`translate(${player.x},${player.y})`}>
+            <g fill = {player.data.type == "nest" ? "black" : ""} key = {player.data.type == "nest" ? player.name : player.data._id + player.depth} id = {`move-${player.data._id}`} onClick = {player.data.type == "player" ? () => props.firstLevelConnections(player) : () =>{}} className = {player.data.type == "player" ? "group group-player" : player.data.type == "team" ? "group group-team" : "group-nest"} width = { player.r * 2 * 0.84 + "px"}  transform = {`translate(${player.x},${player.y})`}>
            
             {player.data.type == "team" ?
-             <circle  fill = {"url(#" + player.data._id + ")"}  r ={player.r*1} >
+             <circle  fill = {"url(#" + player.data._id + player.depth + ")"}  r ={player.r*1} >
             </circle> 
             : player.data.type == "player" ?
-            <circle  fill = {"url(#" + player.data._id + ")"}  r ={player.r*0.84}  >
+            <circle  fill = {"url(#" + player.data._id + player.depth +  ")"}  r ={player.r*0.84}  >
             </circle>
             :
             <circle  fill = {"rgba(0,0,0,0.4"}  r ={player.r*0.84}  >

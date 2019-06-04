@@ -102,8 +102,8 @@ export default {
         let playersToIgnore = []
         let playerConnections = []
         let firstLevelConnections = activeConnections;
-        console.log(activeConnections)
-        console.log(firstLevelConnections)
+        // console.log(activeConnections)
+        // console.log(firstLevelConnections)
 
         playersToIgnore.push(player.data._id);
         for (var i = 0; i < firstLevel.children.length; i++) {
@@ -112,8 +112,12 @@ export default {
             }
         }
         // playersToIgnore.shift();
-        console.log(playersToIgnore)
-        let newPlayerMap = {}
+        // console.log(playersToIgnore)
+        firstLevel.type = "nest"
+        let prevLevel = firstLevel
+        let newPlayerMap
+        newPlayerMap = firstLevel
+        let nthLevelConnections
         for (var i = 1; i < n; i++) {
             let nthLevelPlayerIds = [];
             let nthLevelConnections = allConnections.filter(
@@ -142,7 +146,10 @@ export default {
 
                 })
             nthLevelPlayerIds = [...new Set(nthLevelPlayerIds)];
+            playersToIgnore = nthLevelPlayerIds.concat(playersToIgnore);
             // console.log(nthLevelPlayerIds);
+            console.log(playersToIgnore)
+            // console.log(playersToIgnore)
 
             let nthPlayerMap = allPlayerMap.children.filter(
                 function(team) {
@@ -159,22 +166,21 @@ export default {
                 team.children = team.children.filter(player => nthLevelPlayerIds.some(x => x == player._id));
                 return team;
             })
-            console.log(nthPlayerMap)
-            let newPlayerMap = {
+            // console.log(nthPlayerMap)
+            nthPlayerMap.unshift(prevLevel);
+            newPlayerMap = {
+                type: "nest",
                 name: i + "level",
                 children: nthPlayerMap
             }
-            firstLevel.type = "nest"
-            newPlayerMap.children.unshift(
-                firstLevel
-            )
+            prevLevel = newPlayerMap
+            // firstLevel.type = "nest"
+            // newPlayerMap.children.unshift(
+            //     firstLevel
+            // )
 
-            console.log(newPlayerMap)
-            return {
-            playerMap: newPlayerMap,
-            playerMapConnections: firstLevelConnections.concat(nthLevelConnections)
-            // playerMapFocus: player
-        }
+            // console.log(newPlayerMap)
+           
             // console.log(nthLevelConnections)
             // let activeConnections = allConnections.filter(x => playerConnections.some(y => y == x._id))
             // let activePlayerIDs = activeConnections.map(x => {
@@ -186,6 +192,12 @@ export default {
 
 
         }
+
+        console.log(newPlayerMap);
+         return {
+            playerMap: newPlayerMap,
+            playerMapConnections: firstLevelConnections.concat(nthLevelConnections)
+            }
 
         // {
         //     name: "nth level"

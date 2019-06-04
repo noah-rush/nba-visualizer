@@ -94,8 +94,8 @@ class App extends Component {
         allConnections: [],
         searchValue: "",
         playerMapConnections: [],
-        playerMapFocus: ""
-
+        playerMapFocus: "",
+        depthNumber:1
     };
     componentDidMount() {
         // this.loadTeams();
@@ -104,7 +104,12 @@ class App extends Component {
 
     };
 
-
+    handleNumberChange = (event) => {
+        this.setState({
+            depthNumber: event.target.value
+        })
+        this.showNthLevelConnections(this.state.playerMapFocus, event.target.value)
+    }
     handleSuggestionsFetchRequested = ({ value }) => {
         this.setState({
             suggestions: this.getSuggestions(value),
@@ -193,7 +198,7 @@ class App extends Component {
 
     }
     initPlayerMap = () => {
-        console.log("init player map")
+        // console.log("init player map")
         API.playerMap()
             .then(data => {
                 var players = {}
@@ -312,10 +317,17 @@ class App extends Component {
         this.setState(newState)
     }
 
-      showSecondLevelConnections = (player) => {
-        let newState = CONNECTIONS.nthLevelConnections(2, player, this.state.playerMap, this.state.allPlayerMap,this.state.playerMapConnections, this.state.allConnections)
+    showNthLevelConnections = (player, levels) => {
+        let firstLevel = CONNECTIONS.firstLevelConnections(player, this.state.allPlayerMap, this.state.allConnections).playerMap;
+        let newState = CONNECTIONS.nthLevelConnections(levels, player, firstLevel, this.state.allPlayerMap,this.state.playerMapConnections, this.state.allConnections)
+        
         this.setState(newState)
     }
+    //   showThirdLevelConnections = (player) => {
+    //     let newState = CONNECTIONS.nthLevelConnections(3, player, this.state.playerMap, this.state.allPlayerMap,this.state.playerMapConnections, this.state.allConnections)
+        
+    //     this.setState(newState)
+    // }
 
 
     getPlayer = (playerId, teamIndex, playerIndex) => {
@@ -350,7 +362,7 @@ class App extends Component {
                 statTable.push(<div key = {property}>{property} : {stats[property]}</div>)
             }
         }
-        console.log(statTable)
+        // console.log(statTable)
         return statTable;
 
     }
@@ -359,7 +371,11 @@ class App extends Component {
     render() {
         return (
             <div className = "main-container">
-            <ActivePlayer secondLevel = {this.showSecondLevelConnections} active = {this.state.playerMapFocus}></ActivePlayer>
+            <ActivePlayer 
+                nthLevel = {this.showNthLevelConnections}
+                handleNumberChange = {this.handleNumberChange}
+                depthNumber = {this.depthNumber}  
+                active = {this.state.playerMapFocus}></ActivePlayer>
   {
         <Autocomplete
          suggestions = {this.state.suggestions} 
