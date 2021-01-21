@@ -79,7 +79,8 @@ export default {
         return {
             playerMap: newPlayerMap,
             playerMapConnections: activeConnections,
-            playerMapFocus: player
+            playerMapFocus: player,
+            updateMap:true
         }
 
         // activePlayers = allPlayerMap.filter(x => activePlayers.some(y => y == x._id))
@@ -196,7 +197,9 @@ export default {
         console.log(newPlayerMap);
          return {
             playerMap: newPlayerMap,
-            playerMapConnections: firstLevelConnections.concat(nthLevelConnections)
+            playerMapConnections: firstLevelConnections.concat(nthLevelConnections),
+            updateMap:true
+
             }
 
         // {

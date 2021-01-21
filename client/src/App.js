@@ -10,6 +10,7 @@ import PlayerBar from "./Components/Player/PlayerBar.js";
 import PlayerMap from "./Components/PlayerMap";
 import Autocomplete from './Components/PlayerMap/autocomplete'
 import ActivePlayer from './Components/PlayerMap/activePlayer'
+import HoverPlayer from './Components/PlayerMap/hoverPlayer'
 
 // import PlayerStats from "./Components/Player/PlayerStats.js";
 import TeamStatTable from "./Components/TeamStatTable/TeamStatTable.js";
@@ -74,9 +75,6 @@ class App extends Component {
 
 
 
-
-
-
     state = {
         teams: [],
         activeTeam: "false",
@@ -95,7 +93,9 @@ class App extends Component {
         searchValue: "",
         playerMapConnections: [],
         playerMapFocus: "",
-        depthNumber:1
+        depthNumber:1,
+        hoverPlayer:false,
+        updateMap: true
     };
     componentDidMount() {
         // this.loadTeams();
@@ -129,37 +129,12 @@ class App extends Component {
         });
     };
     handleSelectionSelected = (event, { suggestion, suggestionValue, suggestionIndex, sectionIndex, method }) => {
-        // console.log(suggestion)
-        Number.prototype.map = function(in_min, in_max, out_min, out_max) {
-            return (this - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-        }
-        var svgHeight = parseFloat(document.getElementsByClassName('player-connections')[0].getAttribute('height'));
-        var svgWidth = parseFloat(document.getElementsByClassName('player-connections')[0].getAttribute('height'));
-        // let allPlayers = [...this.state.allPlayerMap]
-        // allPlayers = allPlayers.map((x, index) => {
-        //     x.r = x.length * 8;
-        //     return x
-        // });
-        // this.setState({
 
-        //     playerMap: allPlayers
-        // })
-        // this.setState({ playerMapFocus: suggestion.index })
-        // document.getElementById('move-' + suggestion._id).click()
         let player = {};
+
         player.data = suggestion
         this.showFirstLevelConnections(player)
 
-        // let x = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[4]);
-        // let y = parseFloat(window.getComputedStyle(document.getElementById('move-' + suggestion._id)).getPropertyValue('transform').match(/(-?[0-9\.]+)/g)[5]);
-        // console.log(x);
-        // console.log(y);
-
-        // let moveY = y.map(svgHeight / -2, svgHeight / 2, 0, svgHeight) - window.innerHeight / 2;
-        // let moveX = x.map(svgWidth / -2, svgWidth / 2, 0, svgWidth) - window.innerWidth / 2;
-
-        // document.getElementsByClassName('player-map')[0].scrollTop = moveY;
-        // document.getElementsByClassName('player-map')[0].scrollLeft = moveX;
 
 
 
@@ -173,13 +148,11 @@ class App extends Component {
 
         return inputLength === 0 ? [] :
             this.state.suggestionMasterList.filter(suggestion => {
-                // console.log(suggestion.name);
-                // let keep = ""
-                // if(suggestion.name){
-                let keep =
-                    count < 5 && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue;
-                // }
-                if (keep) {
+                let keep = ""
+                if(suggestion.name != undefined){
+                     keep = count < 5 && suggestion.name.slice(0, inputLength).toLowerCase() === inputValue ? suggestion : "";
+                }
+                if (keep != "") {
                     count += 1;
                 }
 
@@ -188,7 +161,7 @@ class App extends Component {
     }
 
 
-    teamFilter = (tricode)=>{
+    teamFilter = (tricode) => {
                 let allPlayerMap = JSON.parse(JSON.stringify({...this.state.allPlayerMap}));
                 let team = allPlayerMap.children.filter(x => x._id == tricode.toLowerCase());
                 let playerMap = {}
@@ -204,8 +177,7 @@ class App extends Component {
                 var players = {}
                 players.name = "PlayerMap"
                 players.children = data.data.data
-                console.log(players);
-                                let suggestionMasterList = []
+                let suggestionMasterList = []
 
                 players.children.forEach(function(element, index) {
                     element.index = index;
@@ -221,18 +193,9 @@ class App extends Component {
                             x.value = x.length * 8;
                         }
                       suggestionMasterList.push(x);
-
                     })
 
                 });
-                // for(let i = 0; i<players.children.length; i++){
-                //     for(let j =0; j<players.children[i].children.length; j++){
-                //     }
-
-                // }
-
-
-                // console.log(players);
                 this.setState({ playerMap: players,
                     allPlayerMap: players,
                     suggestionMasterList: suggestionMasterList,
@@ -240,13 +203,7 @@ class App extends Component {
                     playerMapConnections: data.data.connections,
                     allConnections: data.data.connections
                  });
-     
-                // this.state.playerMapConnections = data.data.connections
-
-                // D3.playerMap(data.data);
             })
-
-
     };
     loadTeams = () => {
         API.getTeams()
@@ -308,6 +265,7 @@ class App extends Component {
         this.setState({
             playerMapConnections: allConnections,
             playerMap: allPlayers,
+            playerMapFocus: ""
             // playerMapFocus: ""
         })
 
@@ -315,6 +273,7 @@ class App extends Component {
     showFirstLevelConnections = (player) => {
         let newState = CONNECTIONS.firstLevelConnections(player, this.state.allPlayerMap, this.state.allConnections)
         this.setState(newState)
+        // this.setState({updateMap:true})
     }
 
     showNthLevelConnections = (player, levels) => {
@@ -322,6 +281,8 @@ class App extends Component {
         let newState = CONNECTIONS.nthLevelConnections(levels, player, firstLevel, this.state.allPlayerMap,this.state.playerMapConnections, this.state.allConnections)
         
         this.setState(newState)
+        // this.setState({updateMap:true})
+
     }
     //   showThirdLevelConnections = (player) => {
     //     let newState = CONNECTIONS.nthLevelConnections(3, player, this.state.playerMap, this.state.allPlayerMap,this.state.playerMapConnections, this.state.allConnections)
@@ -342,10 +303,11 @@ class App extends Component {
                 currentState.teams[teamIndex].players[playerIndex].profile = data.data;
                 this.setState(currentState)
             })
-
-
-
-
+    }
+    playerHover = (playerIndex) =>{
+        console.log(playerIndex)
+        let hoverPlayer = this.state.suggestionMasterList.filter(x => x._id == playerIndex)
+        this.setState({hoverPlayer: hoverPlayer[0]})
     }
     toggleGraphType = event => {
         this.setState({ "graphStyle": event.target.value })
@@ -366,16 +328,22 @@ class App extends Component {
         return statTable;
 
     }
-
+    callUpdated = () =>{
+        this.setState({updateMap:false})
+    }
 
     render() {
         return (
             <div className = "main-container">
+           
             <ActivePlayer 
                 nthLevel = {this.showNthLevelConnections}
                 handleNumberChange = {this.handleNumberChange}
                 depthNumber = {this.depthNumber}  
                 active = {this.state.playerMapFocus}></ActivePlayer>
+
+                <HoverPlayer hover = {this.state.hoverPlayer}></HoverPlayer>
+  
   {
         <Autocomplete
          suggestions = {this.state.suggestions} 
@@ -388,7 +356,18 @@ class App extends Component {
          ></Autocomplete>
      }
 
-            <PlayerMap  reset = {this.resetPlayerMap} activePlayer ={this.state.playerMapFocus} playerMapPlayerView = {true} firstLevelConnections ={this.showFirstLevelConnections} connections = {this.state.playerMapConnections} playerNodes = {this.state.playerMap} className = "player-connections">
+            <PlayerMap  
+            reset = {this.resetPlayerMap} 
+            activePlayer ={this.state.playerMapFocus}
+            hoverPlayer ={this.state.hoverPlayer} 
+            playerMapPlayerView = {true} 
+            firstLevelConnections ={this.showFirstLevelConnections} 
+            connections = {this.state.playerMapConnections} 
+            playerNodes = {this.state.playerMap} 
+            playerHover = {this.playerHover}
+            updated = {this.state.updateMap}
+            callUpdated = {this.callUpdated}
+            className = "player-connections">
 
             </PlayerMap>
       <TeamBar active = {this.state.teamsLoaded}>
