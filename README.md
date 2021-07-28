@@ -7,7 +7,8 @@ Six Degrees of Kevin Durant allows users to visualize connections between NBA pl
 
 
 
-## Tech
+## Specs
+Six Degrees is built using react and express, and is currently deployed to heroku. All data comes from https://www.basketball-reference.com/, and uses both 2 player stats as well as box-score investigations. The data is stored in a Mongo Database. The visualization was made with D3, specifically using its very useful pack layout (https://d3-wiki.readthedocs.io/zh_CN/master/Pack-Layout/). 
 
 
 
