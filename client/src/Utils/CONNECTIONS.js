@@ -95,8 +95,7 @@ export default {
         newPlayerMap = firstLevel
         let nthLevelConnections
         for (var i = 1; i < n; i++) {
-           l tw
-           et allPlayerMap = JSON.parse(JSON.stringify({ ...allPlayers }))
+           let allPlayerMap = JSON.parse(JSON.stringify({ ...allPlayers }))
 
             let nthLevelPlayerIds = [];
             let nthLevelConnections = allConnections.filter(
