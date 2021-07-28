@@ -63,18 +63,6 @@ def addToDB(team):
 			db.players.find_one_and_update(findObj, updateObj, return_document = ReturnDocument.AFTER)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
 for i in data:
 	url = "https://www.basketball-reference.com" + i
 	response = requests.get(url, headers=headers)

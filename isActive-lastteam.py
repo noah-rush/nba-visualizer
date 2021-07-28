@@ -45,7 +45,8 @@ while(player):
             i -= 1
             lastSeason = allSeasons[i] 
 
-    findObj = {"_id": playerId}
+    findObj = {"_id": playerId
+    }
     updateObj = { "$set":{"team":team, "active": active}}
     result = db.players.find_one_and_update(findObj, updateObj, return_document = ReturnDocument.AFTER)
     print(result)

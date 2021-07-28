@@ -117,24 +117,6 @@ getMonthBoxScores(currentDate, endDate)
 // }) 
 
 
-function getPlayers($, teamCode) {
-    team.code = teamCode
-    team.players = [];
-    $('#box-' + teamCode.toUpperCase() + '-game-basic tbody').find("tr").each(function() {
-        player = {
-            name: $(this).find('a').text(),
-            _id: $(this).find('th.left').attr("data-append-csv")
-        }
-        if ($(this).find('td[data-stat="mp"]').text() && player._id != undefined) {
-            // console.log($(this).find('a').text());
-
-            team.players.push(player)
-        }
-
-    })
-    return team
-}
-
 function addToDB(team) {
     for (var i = 0; i < team.players.length; i++) {
 
@@ -171,22 +153,6 @@ function addToDB(team) {
     }
 
 }
-// for (var i = 0; i < hrefs.length; i++) {
-//     axios.get("https://www.basketball-reference.com" + hrefs[i]).then(function(data) {
-//         const $ = cheerio.load(data.data);
-//         // console.log(data.data);
-//         let teams = []
-//         //             // console.log($('.game_summary').find('a').text());
-//         $(".in_list").find("a").each(function(e) {
-//             // console.log($(this))
-//             teamCode = $(this).attr("href").replace("/teams/", "").substring(0, 3).toLowerCase();
-//             if (e != 2) {
-//                 teams.push(teamCode)
-//             }
-//         })
-
-//         team1 = getPlayers($, teams[0])
-//         team2 = getPlayers($, teams[1])
 
 
 
@@ -194,6 +160,3 @@ function addToDB(team) {
 
 
 
-
-//     })
-// }
