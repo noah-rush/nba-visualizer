@@ -46,7 +46,6 @@ class PlayerMap extends Component {
           ref={ref}
           onMouseDown={onMouseDown}>
 
-        <a onClick = {this.props.reset} className = "reset-playerMap">Back To All</a>
         <svg height = {width}  width = {height} className = {this.props.className}  >
         {
             nodes.map((player,index) => (

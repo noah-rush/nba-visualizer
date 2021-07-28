@@ -35,8 +35,6 @@ export default {
             team.children = team.children.filter(player => activePlayerIDs.some(x => x == player._id));
             return team;
         })
-        // console.log(newPlayerMap);
-        // console.log(player)
         newPlayerMap.map(x => {
             if (x._id == player.data.team) {
                 // player.data.r = 1000;
@@ -46,8 +44,6 @@ export default {
                 return x;
             }
         })
-        // newPlayerMap[player.data.team].unshift(player.data);
-        // newPlayerMap
         newPlayerMap = {
             name: "PlayerMap",
             children: newPlayerMap
@@ -70,12 +66,6 @@ export default {
             })
 
         });
-        // console.log(newPlayerMap);
-        // this.setState({
-        //     playerMap: newPlayerMap,
-        //     playerMapConnections: activeConnections,
-        //     playerMapFocus: player
-        // })
         return {
             playerMap: newPlayerMap,
             playerMapConnections: activeConnections,
@@ -83,18 +73,7 @@ export default {
             updateMap:true
         }
 
-        // activePlayers = allPlayerMap.filter(x => activePlayers.some(y => y == x._id))
-        // activePlayers.unshift(player)
-        // activePlayers = activePlayers.map((x, index) => {
-        //     x.r = x.length * 8;
-        //     return x
-        // });
-        // // console.log(activePlayers)
-        // this.setState({
-        //     playerMapConnections: activeConnections,
-        //     playerMap: activePlayers,
-        //     playerMapFocus: 0
-        // })
+
 
 
     },
@@ -103,8 +82,6 @@ export default {
         let playersToIgnore = []
         let playerConnections = []
         let firstLevelConnections = activeConnections;
-        // console.log(activeConnections)
-        // console.log(firstLevelConnections)
 
         playersToIgnore.push(player.data._id);
         for (var i = 0; i < firstLevel.children.length; i++) {
@@ -112,14 +89,15 @@ export default {
                 playersToIgnore.push(firstLevel.children[i].children[j]._id)
             }
         }
-        // playersToIgnore.shift();
-        // console.log(playersToIgnore)
         firstLevel.type = "nest"
         let prevLevel = firstLevel
         let newPlayerMap
         newPlayerMap = firstLevel
         let nthLevelConnections
         for (var i = 1; i < n; i++) {
+           l tw
+           et allPlayerMap = JSON.parse(JSON.stringify({ ...allPlayers }))
+
             let nthLevelPlayerIds = [];
             let nthLevelConnections = allConnections.filter(
                 function(x) {
@@ -127,19 +105,16 @@ export default {
                     let player2Id = x.players.split("|")[1];
                     let player1 = playersToIgnore.some(x => player1Id == x);
                     let player2 = playersToIgnore.some(x => player2Id == x);
-                    // console.log(player1Id +": " + player1 )
-                    // console.log(player2Id +": " + player2 )
 
                     if (player1 && player2) {
                         return false
                     }
                     if (player1 && !player2) {
-                        console.log(player1Id + " + " + player2Id + " added")
                         nthLevelPlayerIds.push(player2Id)
                         return true
                     }
                     if (!player1 && player2) {
-                        console.log(player1Id + " + " + player2Id + " added")
+                        // console.log(player1Id + " + " + player2Id + " added")
                         nthLevelPlayerIds.push(player1Id)
 
                         return true
@@ -148,26 +123,23 @@ export default {
                 })
             nthLevelPlayerIds = [...new Set(nthLevelPlayerIds)];
             playersToIgnore = nthLevelPlayerIds.concat(playersToIgnore);
-            // console.log(nthLevelPlayerIds);
-            console.log(playersToIgnore)
-            // console.log(playersToIgnore)
-
+            console.log(allPlayerMap)
             let nthPlayerMap = allPlayerMap.children.filter(
                 function(team) {
-                    // console.log(team.children);
                     let teamChildrenFilter = team.children.filter(player => nthLevelPlayerIds.some(x => x == player._id));
-                    // console.log(teamChildrenFilter);
                     if (teamChildrenFilter.length == 0) {
                         return false;
                     } else {
                         return true;
                     }
                 })
+            console.log(nthPlayerMap)
+
             nthPlayerMap = nthPlayerMap.map(team => {
                 team.children = team.children.filter(player => nthLevelPlayerIds.some(x => x == player._id));
                 return team;
             })
-            // console.log(nthPlayerMap)
+            console.log(nthPlayerMap)
             nthPlayerMap.unshift(prevLevel);
             newPlayerMap = {
                 type: "nest",
@@ -175,21 +147,6 @@ export default {
                 children: nthPlayerMap
             }
             prevLevel = newPlayerMap
-            // firstLevel.type = "nest"
-            // newPlayerMap.children.unshift(
-            //     firstLevel
-            // )
-
-            // console.log(newPlayerMap)
-           
-            // console.log(nthLevelConnections)
-            // let activeConnections = allConnections.filter(x => playerConnections.some(y => y == x._id))
-            // let activePlayerIDs = activeConnections.map(x => {
-            //     let player = x.players.replace(playerId + "|", "")
-            //     player = player.replace("|" + playerId, "")
-            //     return player
-            // })
-            // activePlayerIDs.unshift(playerId);
 
 
         }
@@ -197,30 +154,12 @@ export default {
         console.log(newPlayerMap);
          return {
             playerMap: newPlayerMap,
-            playerMapConnections: firstLevelConnections.concat(nthLevelConnections),
+            // playerMapConnections: firstLevelConnections.concat(nthLevelConnections),
             updateMap:true
 
             }
 
-        // {
-        //     name: "nth level"
-        //     children:[
-        //     {
-        //         _id:teamId,
-        //         children:
-        //         [
-        //         bunch of players
-        //         ]
-        //     },
-        //     name:"nth level - 1"
-        //     children:[
-        //     {   
-        //         _id:teamId,
-        //         childnre:[
-        //         bunch of players]
-        //     }]
-        //     ]
-        // }
+
     }
 
 };
