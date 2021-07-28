@@ -10,5 +10,9 @@ Six Degrees of Kevin Durant allows users to visualize connections between NBA pl
 ## Specs
 Six Degrees is built using react and express, and is currently deployed to heroku. All data comes from https://www.basketball-reference.com/, and uses both 2 player stats as well as box-score investigations. The data is stored in a Mongo Database. The visualization was made with D3, specifically using its very useful pack layout (https://d3-wiki.readthedocs.io/zh_CN/master/Pack-Layout/). 
 
+## Todo
+The visualization is a little large and unwieldy, would like to add a feature that finds a path between two players within the large visualization a lot like this app (https://ginoreyes.me/nbasixdegrees/). (I swear I arrived at the name independently as well.) It would be cool to add 2 player, or even more player combined stats, and to replace the image not found placeholder with something that looks a little better. Also, the visualization is not responsive. 
+
+
 
 
