@@ -38,7 +38,7 @@
     "dot-env": "0.0.1",
     "dotenv": "^10.0.0",
     "drag-scroll-provider": "^1.0.6",
-    "express": "^4.16.3",
+    "express": "^4.17.3",
     "if-env": "^1.0.4",
     "moment": "^2.24.0",
     "mongoose": "^5.7.5",
